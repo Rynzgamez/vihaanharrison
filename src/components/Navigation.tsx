@@ -15,8 +15,9 @@ const Navigation = () => {
 
   const navItems = [
     { label: "About", href: "#about" },
-    { label: "Projects", href: "#projects" },
-    { label: "Achievements", href: "#achievements" },
+    { label: "Projects", href: "/projects" },
+    { label: "Milestones", href: "/milestones" },
+    { label: "Timeline", href: "/timeline" },
     { label: "Contact", href: "#contact" },
   ];
 
@@ -33,8 +34,8 @@ const Navigation = () => {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <motion.a
-            href="#"
-            className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent"
+            href="/"
+            className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent"
             whileHover={{ scale: 1.05 }}
           >
             Vihaan Harrison

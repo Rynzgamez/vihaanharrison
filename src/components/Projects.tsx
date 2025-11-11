@@ -1,58 +1,56 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import { ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
+interface Project {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  tags: string[];
+  impact: string;
+  github_url?: string;
+  live_url?: string;
+}
 
 const Projects = () => {
-  const projects = [
-    {
-      title: "GreenergyX",
-      category: "Environmental Tech",
-      description:
-        "Environmental contribution tracker helping users monitor and reduce their carbon footprint. Certified project making real impact.",
-      tags: ["AI", "Sustainability", "Web App"],
-      impact: "700+ kg Recycled",
-    },
-    {
-      title: "Disease Detection App",
-      category: "Healthcare AI",
-      description:
-        "Machine learning application using mobile camera for early disease detection, making healthcare more accessible.",
-      tags: ["ML", "Computer Vision", "Mobile"],
-      impact: "Real-time Detection",
-    },
-    {
-      title: "Fake News Detector",
-      category: "AI Ethics",
-      description:
-        "On-device AI system for information integrity, helping users identify misinformation and verify sources.",
-      tags: ["NLP", "AI", "Ethics"],
-      impact: "Information Integrity",
-    },
-    {
-      title: "Weather Forecast System",
-      category: "Data Science",
-      description:
-        "Python-based weather prediction model using Pandas for data analysis and accurate forecasting.",
-      tags: ["Python", "Pandas", "Data Science"],
-      impact: "Accurate Predictions",
-    },
-    {
-      title: "Forest Fire Predictor",
-      category: "Climate Tech",
-      description:
-        "Satellite data-based AI mapping system for early forest fire detection and prevention.",
-      tags: ["AI", "Satellite Data", "Climate"],
-      impact: "Early Warning System",
-    },
-    {
-      title: "Music Recommender",
-      category: "Entertainment AI",
-      description:
-        "Variable-based AI recommendation system providing personalized music suggestions.",
-      tags: ["AI", "Recommendation", "Music"],
-      impact: "Personalized Experience",
-    },
-  ];
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeaturedProjects();
+  }, []);
+
+  const fetchFeaturedProjects = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('is_featured', true)
+        .order('date', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      setProjects(data || []);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section id="projects" className="py-24">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-muted-foreground">Loading projects...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="projects" className="py-24">
@@ -65,10 +63,13 @@ const Projects = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Featured <span className="bg-gradient-primary bg-clip-text text-transparent">Projects</span>
+            Featured <span className="bg-gradient-accent bg-clip-text text-transparent">Projects</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Innovative solutions combining AI, sustainability, and social impact
+            Innovative solutions combining AI, sustainability, and social impact.{" "}
+            <Link to="/projects" className="text-accent hover:underline">
+              View all projects →
+            </Link>
           </p>
         </motion.div>
 
@@ -88,12 +89,20 @@ const Projects = () => {
                 <div className="flex items-start justify-between mb-3">
                   <span className="text-sm text-primary font-semibold">{project.category}</span>
                   <div className="flex gap-2">
-                    <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-smooth">
-                      <Github size={18} />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-smooth">
-                      <ExternalLink size={18} />
-                    </Button>
+                    {project.github_url && (
+                      <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-smooth" asChild>
+                        <a href={project.github_url} target="_blank" rel="noopener noreferrer">
+                          <Github size={18} />
+                        </a>
+                      </Button>
+                    )}
+                    {project.live_url && (
+                      <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-smooth" asChild>
+                        <a href={project.live_url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink size={18} />
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <h3 className="text-xl font-bold mb-2">{project.title}</h3>
@@ -101,7 +110,7 @@ const Projects = () => {
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag) => (
+                  {project.tags?.map((tag) => (
                     <span
                       key={tag}
                       className="px-3 py-1 bg-muted text-xs rounded-full text-muted-foreground"
@@ -110,9 +119,11 @@ const Projects = () => {
                     </span>
                   ))}
                 </div>
-                <div className="pt-4 border-t border-border">
-                  <span className="text-sm font-semibold text-accent">{project.impact}</span>
-                </div>
+                {project.impact && (
+                  <div className="pt-4 border-t border-border">
+                    <span className="text-sm font-semibold text-accent">{project.impact}</span>
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}

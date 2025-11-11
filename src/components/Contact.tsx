@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 
 const Contact = () => {
   const socialLinks = [
-    { icon: Linkedin, label: "LinkedIn", href: "#", color: "hover:text-[#0077B5]" },
-    { icon: Github, label: "GitHub", href: "#", color: "hover:text-foreground" },
-    { icon: Instagram, label: "Instagram", href: "#", color: "hover:text-[#E4405F]" },
-    { icon: Mail, label: "Email", href: "mailto:vihaan@example.com", color: "hover:text-accent" },
+    { icon: Github, label: "GitHub", href: "https://github.com/Rynzgamez", color: "hover:text-foreground" },
+    { icon: Instagram, label: "Instagram", href: "https://instagram.com/vihaan.harrison", color: "hover:text-accent" },
+    { icon: Mail, label: "Email", href: "mailto:vihaanharrison@gmail.com", color: "hover:text-accent" },
   ];
 
   return (
@@ -21,7 +20,7 @@ const Contact = () => {
           className="max-w-4xl mx-auto text-center"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Let's <span className="bg-gradient-primary bg-clip-text text-transparent">Connect</span>
+            Let's <span className="bg-gradient-accent bg-clip-text text-transparent">Connect</span>
           </h2>
           <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
             Whether you're a recruiter, collaborator, or fellow innovator — I'd love to hear from
@@ -37,8 +36,8 @@ const Contact = () => {
           >
             <Button
               size="lg"
-              className="gradient-primary shadow-glow text-lg px-8 py-6"
-              onClick={() => window.location.href = "mailto:vihaan@example.com"}
+              className="gradient-accent shadow-glow text-lg px-8 py-6"
+              onClick={() => window.location.href = "mailto:vihaanharrison@gmail.com"}
             >
               <Mail className="mr-2" size={20} />
               Get In Touch

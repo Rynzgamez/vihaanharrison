@@ -31,7 +31,7 @@ const Hero = () => {
             transition={{ delay: 0.2, duration: 0.8 }}
           >
             Hi, I'm{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
+            <span className="bg-gradient-accent bg-clip-text text-transparent">
               Vihaan Harrison
             </span>
           </motion.h1>
@@ -63,7 +63,7 @@ const Hero = () => {
           >
             <Button
               size="lg"
-              className="gradient-primary shadow-glow text-lg"
+              className="gradient-accent shadow-glow text-lg"
               onClick={() =>
                 document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
               }

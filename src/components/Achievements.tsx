@@ -50,7 +50,7 @@ const Achievements = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Achievements &{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">Recognition</span>
+            <span className="bg-gradient-accent bg-clip-text text-transparent">Recognition</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Celebrating milestones in academics, leadership, and social impact
