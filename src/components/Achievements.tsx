@@ -42,14 +42,13 @@ const Achievements = () => {
     <section id="achievements" className="py-24 bg-muted/30">
       <div className="container mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.8 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Achievements &{" "}
             <span className="bg-gradient-accent bg-clip-text text-transparent">Recognition</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

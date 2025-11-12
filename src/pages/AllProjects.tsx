@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import ProjectFormModal from "@/components/ProjectFormModal";
 
 interface Project {
   id: string;
@@ -31,6 +31,7 @@ const AllProjects = () => {
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
   const { isAuthenticated, login } = useAdminAuth();
 
   useEffect(() => {
@@ -88,32 +89,53 @@ const AllProjects = () => {
             All <span className="bg-gradient-accent bg-clip-text text-transparent">Projects</span>
           </motion.h1>
           
-          {!isAuthenticated && (
-            <Dialog open={showPasswordPrompt} onOpenChange={setShowPasswordPrompt}>
-              <DialogTrigger asChild>
-                <Button variant="outline">Admin Access</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Admin Authentication</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                    />
+          <div className="flex gap-3">
+            {isAuthenticated && (
+              <Button 
+                onClick={() => setShowProjectForm(true)}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Project
+              </Button>
+            )}
+            
+            {!isAuthenticated && (
+              <Dialog open={showPasswordPrompt} onOpenChange={setShowPasswordPrompt}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Admin Access</Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card">
+                  <DialogHeader>
+                    <DialogTitle className="text-foreground">Admin Authentication</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="password" className="text-foreground">Password</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                        className="bg-background text-foreground border-border"
+                      />
+                    </div>
+                    <Button onClick={handleLogin} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                      Login
+                    </Button>
                   </div>
-                  <Button onClick={handleLogin} className="w-full">Login</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
         </div>
+
+        <ProjectFormModal 
+          open={showProjectForm}
+          onOpenChange={setShowProjectForm}
+          onSuccess={fetchProjects}
+        />
 
         {featuredProjects.length > 0 && (
           <div className="mb-16">
