@@ -19,8 +19,8 @@ const Contact = () => {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Let's <span className="bg-gradient-accent bg-clip-text text-transparent">Connect</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+            Let's <span className="text-accent">Connect</span>
           </h2>
           <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
             Whether you're a recruiter, collaborator, or fellow innovator — I'd love to hear from
@@ -34,14 +34,14 @@ const Contact = () => {
             viewport={{ once: true }}
             className="mb-12"
           >
-            <Button
-              size="lg"
-              className="gradient-accent shadow-glow text-lg px-8 py-6"
-              onClick={() => window.location.href = "mailto:vihaanharrison@gmail.com"}
-            >
-              <Mail className="mr-2" size={20} />
-              Get In Touch
-            </Button>
+          <Button
+            size="lg"
+            className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow text-lg px-8 py-6"
+            onClick={() => window.location.href = "mailto:vihaanharrison@gmail.com"}
+          >
+            <Mail className="mr-2 text-accent-foreground" size={20} />
+            Get In Touch
+          </Button>
           </motion.div>
 
           <motion.div
@@ -57,7 +57,7 @@ const Contact = () => {
                 href={link.href}
                 whileHover={{ scale: 1.1, y: -4 }}
                 whileTap={{ scale: 0.95 }}
-                className={`w-14 h-14 rounded-full bg-card shadow-elegant flex items-center justify-center text-muted-foreground transition-smooth ${link.color}`}
+                className={`w-14 h-14 rounded-full bg-card shadow-elegant flex items-center justify-center text-foreground transition-smooth ${link.color}`}
                 aria-label={link.label}
               >
                 <link.icon size={24} />

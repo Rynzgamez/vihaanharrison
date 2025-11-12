@@ -53,9 +53,9 @@ const Timeline = () => {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-5xl font-bold mb-12"
+          className="text-4xl md:text-5xl font-bold mb-12 text-foreground"
         >
-          Project <span className="bg-gradient-accent bg-clip-text text-transparent">Timeline</span>
+          Project <span className="text-accent">Timeline</span>
         </motion.h1>
 
         <div className="relative">
@@ -88,7 +88,7 @@ const Timeline = () => {
                 <span className="text-xs text-accent font-semibold uppercase tracking-wide">
                   {project.category}
                 </span>
-                <h3 className="text-xl font-bold mt-2 mb-2">{project.title}</h3>
+                <h3 className="text-xl font-bold mt-2 mb-2 text-foreground">{project.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   {project.description}
                 </p>

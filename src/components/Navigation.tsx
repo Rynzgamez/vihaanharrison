@@ -14,11 +14,11 @@ const Navigation = () => {
   }, []);
 
   const navItems = [
-    { label: "About", href: "#about" },
+    { label: "About", href: "/#about" },
     { label: "Projects", href: "/projects" },
     { label: "Milestones", href: "/milestones" },
     { label: "Timeline", href: "/timeline" },
-    { label: "Contact", href: "#contact" },
+    { label: "Contact", href: "/#contact" },
   ];
 
   return (
@@ -35,7 +35,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           <motion.a
             href="/"
-            className="text-xl font-bold bg-gradient-accent bg-clip-text text-transparent"
+            className="text-xl font-bold text-accent"
             whileHover={{ scale: 1.05 }}
           >
             Vihaan Harrison
@@ -46,7 +46,7 @@ const Navigation = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-foreground/70 hover:text-primary transition-smooth"
+                className="text-foreground hover:text-accent transition-smooth"
               >
                 {item.label}
               </a>
@@ -54,7 +54,7 @@ const Navigation = () => {
           </div>
 
           <Button
-            className="gradient-primary shadow-glow"
+            className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
             onClick={() =>
               document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })
             }

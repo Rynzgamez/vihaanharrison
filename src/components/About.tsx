@@ -35,8 +35,8 @@ const About = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            About <span className="bg-gradient-accent bg-clip-text text-transparent">Me</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+            About <span className="text-accent">Me</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             A student innovator based in Sharjah, UAE, driven by curiosity and a passion for
@@ -80,10 +80,10 @@ const About = () => {
                 whileHover={{ scale: 1.03 }}
                 className="bg-card rounded-xl p-6 shadow-elegant hover:shadow-glow transition-smooth"
               >
-                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4">
-                  <interest.icon className="text-primary-foreground" size={24} />
+                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                  <interest.icon className="text-accent" size={24} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{interest.title}</h3>
+                <h3 className="text-xl font-bold mb-2 text-foreground">{interest.title}</h3>
                 <p className="text-muted-foreground">{interest.description}</p>
               </motion.div>
             ))}

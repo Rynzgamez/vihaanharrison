@@ -12,13 +12,14 @@ interface ProjectFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  defaultCategory?: string;
   editProject?: any;
 }
 
-const ProjectFormModal = ({ open, onOpenChange, onSuccess, editProject }: ProjectFormModalProps) => {
+const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, editProject }: ProjectFormModalProps) => {
   const [formData, setFormData] = useState({
     title: editProject?.title || "",
-    category: editProject?.category || "",
+    category: editProject?.category || defaultCategory || "",
     description: editProject?.description || "",
     tags: editProject?.tags?.join(", ") || "",
     impact: editProject?.impact || "",

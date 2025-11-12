@@ -48,8 +48,8 @@ const Achievements = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-accent bg-clip-text text-transparent">Recognition</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+            <span className="text-accent">Recognition</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Celebrating milestones in academics, leadership, and social impact

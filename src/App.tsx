@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AllProjects from "./pages/AllProjects";
 import Timeline from "./pages/Timeline";
 import Milestones from "./pages/Milestones";
+import CategoryProjects from "./pages/CategoryProjects";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/projects" element={<AllProjects />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/milestones" element={<Milestones />} />
+          <Route path="/category/:categorySlug" element={<CategoryProjects />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

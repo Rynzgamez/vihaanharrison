@@ -27,7 +27,7 @@ const Hero = () => {
           className="text-center max-w-4xl mx-auto"
         >
           <motion.h1
-            className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-accent bg-clip-text text-transparent"
+            className="text-5xl md:text-7xl font-bold mb-6 text-accent"
             initial={{ opacity: 0, filter: "blur(10px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ delay: 0.2, duration: 1 }}
