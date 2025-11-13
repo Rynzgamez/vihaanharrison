@@ -62,8 +62,8 @@ const About = () => {
               dedication and innovation can truly make a difference. My approach combines technical
               excellence with empathy and creativity.
             </p>
-            <div className="inline-block px-6 py-3 gradient-primary rounded-lg">
-              <p className="text-primary-foreground font-semibold">
+            <div className="inline-block px-6 py-3 bg-accent/10 rounded-lg border border-accent/20">
+              <p className="text-foreground font-semibold">
                 "Design to inspire, code to create, and act to impact."
               </p>
             </div>
@@ -75,9 +75,9 @@ const About = () => {
                 key={interest.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.03, y: -5 }}
                 className="bg-card rounded-xl p-6 shadow-elegant hover:shadow-glow transition-smooth"
               >
                 <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">

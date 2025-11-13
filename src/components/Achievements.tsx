@@ -62,12 +62,13 @@ const Achievements = () => {
               key={achievement.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.6 }}
               viewport={{ once: true }}
+              whileHover={{ y: -5, scale: 1.02 }}
               className="bg-card rounded-xl p-6 text-center shadow-elegant hover:shadow-glow transition-smooth"
             >
-              <div className="w-16 h-16 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <achievement.icon className="text-primary-foreground" size={28} />
+              <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <achievement.icon className="text-foreground" size={28} />
               </div>
               <div className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
                 {achievement.count}
@@ -92,7 +93,7 @@ const Achievements = () => {
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                transition={{ duration: 0.4 }}
                 viewport={{ once: true }}
                 className="flex items-start gap-3"
               >

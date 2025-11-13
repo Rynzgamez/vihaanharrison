@@ -10,6 +10,7 @@ import ActivityFormModal from "@/components/ActivityFormModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import CursorEffect from "@/components/CursorEffect";
 
 interface Activity {
   id: string;
@@ -106,6 +107,7 @@ const Milestones = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <CursorEffect />
       <Navigation />
       <div className="container mx-auto px-6 py-24 mt-20">
         <div className="flex justify-between items-center mb-12">

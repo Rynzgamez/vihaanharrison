@@ -72,9 +72,9 @@ const Projects = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
                   whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  transition={{ duration: 0.6 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: -8 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
                   className="bg-card rounded-xl overflow-hidden shadow-elegant hover:shadow-glow transition-smooth group cursor-pointer"
                 >
                   <div className={`h-2 bg-gradient-to-r ${category.color}`} />

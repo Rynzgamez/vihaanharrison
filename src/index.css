@@ -68,10 +68,15 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    cursor: none;
   }
   
   html {
     scroll-behavior: smooth;
+  }
+  
+  a, button, [role="button"] {
+    cursor: none;
   }
 }
 
