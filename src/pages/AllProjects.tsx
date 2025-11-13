@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import ProjectFormModal from "@/components/ProjectFormModal";
+import CursorEffect from "@/components/CursorEffect";
 
 interface Project {
   id: string;
@@ -78,6 +79,7 @@ const AllProjects = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <CursorEffect />
       <Navigation />
       <div className="container mx-auto px-6 py-24 mt-20">
         <div className="flex justify-between items-center mb-12">

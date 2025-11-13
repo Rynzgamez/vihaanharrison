@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { Calendar } from "lucide-react";
 import { toast } from "sonner";
+import CursorEffect from "@/components/CursorEffect";
 
 interface Project {
   id: string;
@@ -48,6 +49,7 @@ const Timeline = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <CursorEffect />
       <Navigation />
       <div className="container mx-auto px-6 py-24 mt-20">
         <motion.h1
@@ -67,7 +69,7 @@ const Timeline = () => {
               key={project.id}
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.6 }}
               className="relative pl-20 pb-12 group"
             >
               {/* Timeline dot */}

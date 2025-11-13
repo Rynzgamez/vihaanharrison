@@ -96,13 +96,21 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
 
           <div>
             <Label htmlFor="category" className="text-foreground">Category</Label>
-            <Input
+            <select
               id="category"
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               required
-              className="bg-background text-foreground border-border"
-            />
+              className="w-full px-3 py-2 rounded-md bg-background text-foreground border border-border"
+            >
+              <option value="">Select a category</option>
+              <option value="Academic & Scholarly Achievements">Academic & Scholarly Achievements</option>
+              <option value="Technology, Coding & Innovation">Technology, Coding & Innovation</option>
+              <option value="Leadership, Volunteering & Environmental Action">Leadership, Volunteering & Environmental Action</option>
+              <option value="Model United Nations (MUN) & Public Speaking">Model United Nations (MUN) & Public Speaking</option>
+              <option value="Arts, Athletics & Personal Passions">Arts, Athletics & Personal Passions</option>
+              <option value="Recognition & Awards">Recognition & Awards</option>
+            </select>
           </div>
 
           <div>

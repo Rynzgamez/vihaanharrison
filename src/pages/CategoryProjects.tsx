@@ -8,6 +8,7 @@ import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { toast } from "sonner";
 import ProjectFormModal from "@/components/ProjectFormModal";
 import { Plus, ExternalLink, Github } from "lucide-react";
+import CursorEffect from "@/components/CursorEffect";
 
 interface Project {
   id: string;
@@ -73,6 +74,7 @@ const CategoryProjects = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <CursorEffect />
       <Navigation />
       <div className="container mx-auto px-6 py-24 mt-20">
         <div className="flex justify-between items-center mb-12">
@@ -111,8 +113,8 @@ const CategoryProjects = () => {
                 key={project.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -8 }}
+                transition={{ duration: 0.6 }}
+                whileHover={{ y: -8, scale: 1.02 }}
                 className="bg-card rounded-xl overflow-hidden shadow-elegant hover:shadow-glow transition-smooth group"
               >
                 <div className="h-2 gradient-accent" />
