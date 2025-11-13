@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.png";
 
 const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,11 +17,11 @@ const Navigation = () => {
   }, []);
 
   const navItems = [
-    { label: "About", href: "/#about" },
+    { label: "About", href: "/about" },
     { label: "Projects", href: "/projects" },
     { label: "Milestones", href: "/milestones" },
     { label: "Timeline", href: "/timeline" },
-    { label: "Contact", href: "/#contact" },
+    { label: "Contact", href: "/contact" },
   ];
 
   return (
@@ -35,29 +38,27 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           <motion.a
             href="/"
-            className="text-xl font-bold text-accent"
+            className="flex items-center"
             whileHover={{ scale: 1.05 }}
           >
-            Vihaan Harrison
+            <img src={logo} alt="Vihaan Harrison" className="h-10 w-auto" />
           </motion.a>
 
           <div className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.label}
-                href={item.href}
+                onClick={() => navigate(item.href)}
                 className="text-foreground hover:text-accent transition-smooth"
               >
                 {item.label}
-              </a>
+              </button>
             ))}
           </div>
 
           <Button
             className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
-            onClick={() =>
-              document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })
-            }
+            onClick={() => navigate("/contact")}
           >
             Let's Connect
           </Button>
