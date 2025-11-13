@@ -110,34 +110,32 @@ const Milestones = () => {
       <CursorEffect />
       <Navigation />
       <div className="container mx-auto px-6 py-24 mt-20">
-        <div className="flex justify-between items-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center flex-1"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-              Beyond <span className="text-accent">Code</span>
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Celebrating achievements in debate, sustainability, volunteering, and more.
-            </p>
-          </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">
+            Beyond <span className="text-accent">Code</span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Key achievements, recognitions, and impactful moments that define my journey
+          </p>
+        </motion.div>
 
+        <div className="flex justify-end items-center mb-12">
           <div className="flex gap-3">
             {isAuthenticated && (
               <Button 
                 onClick={() => setShowActivityForm(true)}
                 className="bg-accent hover:bg-accent/90 text-accent-foreground"
               >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Activity
-              </Button>
-            )}
-            
-            {!isAuthenticated && (
+              <Plus className="mr-2 h-4 w-4" />
+              Add Activity
+            </Button>
+          )}
+          
+          {!isAuthenticated && (
               <Dialog open={showPasswordPrompt} onOpenChange={setShowPasswordPrompt}>
                 <DialogTrigger asChild>
                   <Button variant="outline">Admin Access</Button>
@@ -160,13 +158,13 @@ const Milestones = () => {
                     </div>
                     <Button onClick={handleLogin} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
                       Login
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
-        </div>
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  </div>
 
         <ActivityFormModal 
           open={showActivityForm}

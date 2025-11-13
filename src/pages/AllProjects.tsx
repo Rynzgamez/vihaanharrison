@@ -82,15 +82,20 @@ const AllProjects = () => {
       <CursorEffect />
       <Navigation />
       <div className="container mx-auto px-6 py-24 mt-20">
-        <div className="flex justify-between items-center mb-12">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold text-foreground"
-          >
-            All <span className="text-accent">Projects</span>
-          </motion.h1>
-          
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">
+            Project <span className="text-accent">Showcase</span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Innovative solutions designed to inspire, create, and impact
+          </p>
+        </motion.div>
+
+        <div className="flex justify-end items-center mb-12">
           <div className="flex gap-3">
             {isAuthenticated && (
               <Button 
