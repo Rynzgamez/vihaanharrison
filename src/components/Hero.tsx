@@ -153,7 +153,7 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: `radial-gradient(circle 600px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.95) 100%)`,
+          background: `radial-gradient(circle 600px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)`,
         }}
       />
       
