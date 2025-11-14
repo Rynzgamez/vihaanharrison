@@ -59,7 +59,7 @@ const Navigation = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-3 relative z-[9999]">
+          <div className="bg-red-500">
             {isAdmin && (
               <Button
                 variant="ghost"
