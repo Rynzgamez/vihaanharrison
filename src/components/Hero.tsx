@@ -115,7 +115,7 @@ const Hero = () => {
       const centerY = window.innerHeight / 2;
       const distance = Math.sqrt(Math.pow((x as number) - centerX, 2) + Math.pow((y as number) - centerY, 2));
       const maxDistance = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
-      return 0.15 + (1 - distance / maxDistance) * 0.35;
+      return 0.10 + (1 - distance / maxDistance) * 0.25;
     }
   );
 
@@ -137,7 +137,7 @@ const Hero = () => {
           top: useTransform(mouseY, v => Math.min(Math.max(v, 200), window.innerHeight - 200)),
           x: '-50%',
           y: '-50%',
-          opacity: 0.5,
+          opacity: 0.3,
         }}
         animate={{
           scale: [1, 1.3, 1],
@@ -153,7 +153,7 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: `radial-gradient(circle 600px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.55) 100%)`,
+          background: `radial-gradient(circle 650px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.80) 100%)`,
         }}
       />
       
@@ -161,7 +161,7 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 z-0"
         style={{
-          opacity: 0.5,
+          opacity: 0.3,
         }}
       >
         <img
