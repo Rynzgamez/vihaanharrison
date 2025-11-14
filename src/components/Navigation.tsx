@@ -59,13 +59,13 @@ const Navigation = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative z-[150]">
             {isAdmin && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate("/auth")}
-                className="text-accent hover:text-accent hover:bg-accent/10"
+                className="text-accent hover:text-accent hover:bg-accent/10 border border-accent/30"
                 title="Admin Access"
               >
                 <Shield className="h-5 w-5" />
