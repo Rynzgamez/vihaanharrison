@@ -1,30 +1,30 @@
 import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import CursorEffect from "@/components/CursorEffect";
-import { Code, Lightbulb, Users, Target, Sparkles, Heart } from "lucide-react";
+import { Camera, Palette, Users, Leaf } from "lucide-react";
 import profilePhoto from "@/assets/profile-photo.jpg";
 
 const About = () => {
   const values = [
     {
-      icon: Code,
-      title: "Innovation Through Technology",
-      description: "Leveraging cutting-edge technologies like AI, blockchain, and cloud computing to create solutions that make a real difference in people's lives."
+      icon: Palette,
+      title: "Design & Photography",
+      description: "Crafting visual stories through UI design and photography, merging aesthetics with purpose to create meaningful experiences."
     },
     {
-      icon: Lightbulb,
-      title: "Creative Problem Solving",
-      description: "Approaching challenges with fresh perspectives, combining technical expertise with creative thinking to develop unique solutions."
+      icon: Camera,
+      title: "Creative Expression",
+      description: "Capturing moments and designing interfaces that inspire, blending technical skills with artistic vision."
     },
     {
       icon: Users,
-      title: "Community Impact",
-      description: "Building projects that serve communities, from educational platforms to health tech solutions that improve accessibility and equity."
+      title: "Social Connections",
+      description: "Building meaningful relationships through networking, debate, and community engagement—because people matter."
     },
     {
-      icon: Target,
-      title: "Purpose-Driven Development",
-      description: "Every project is crafted with intention—focusing on sustainability, social impact, and long-term value creation."
+      icon: Leaf,
+      title: "Environmental Sustainability",
+      description: "Passionate about protecting our planet through sustainable practices, environmental advocacy, and conscious living."
     }
   ];
 
@@ -52,13 +52,13 @@ const About = () => {
                   Hi, I'm <span className="text-accent">Vihaan Harrison</span>
                 </h1>
                 <p className="text-xl text-muted-foreground mb-6">
-                  A 16-year-old developer, innovator, and changemaker driven by a passion for technology and social impact.
+                  A 14-year-old designer, developer, and changemaker driven by a passion for creativity and social impact.
                 </p>
                 <p className="text-lg text-foreground/80 mb-4">
-                  I'm currently a student at GEMS Modern Academy, where I balance academics with my passion for building meaningful projects. From AI-powered educational platforms to blockchain-based solutions, I'm constantly exploring how technology can solve real-world problems.
+                  I'm currently a student at Delhi Private School Sharjah, where I balance academics with my passion for design, photography, and meaningful projects. From UI design to environmental advocacy, I'm constantly exploring how creativity and technology can solve real-world problems.
                 </p>
                 <p className="text-lg text-foreground/80">
-                  My journey in tech started with curiosity and has evolved into a mission: to create solutions that inspire innovation, empower communities, and drive positive change.
+                  My journey started with curiosity and has evolved into a mission: to create visual experiences that inspire innovation, empower communities, and drive positive change.
                 </p>
               </motion.div>
               
@@ -88,34 +88,28 @@ const About = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center mb-24"
+            className="max-w-4xl mx-auto mb-24 text-center"
           >
-            <div className="relative">
-              <Sparkles className="absolute -top-8 -left-8 w-12 h-12 text-accent/30" />
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-                My Mission
-              </h2>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                To design solutions that inspire creativity, code systems that create opportunity, 
-                and take action that generates meaningful impact—bridging technology and humanity 
-                to build a better tomorrow.
-              </p>
-              <Heart className="absolute -bottom-8 -right-8 w-12 h-12 text-accent/30" />
-            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              My <span className="text-accent">Mission</span>
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              To blend design, technology, and purpose—creating visual experiences and solutions that not only look beautiful but also inspire action, foster connections, and contribute to a more sustainable and equitable world.
+            </p>
           </motion.div>
 
           {/* Core Values */}
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="mb-24"
           >
-            <h2 className="text-4xl font-bold text-center mb-12 text-foreground">
-              What Drives Me
+            <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
+              What <span className="text-accent">Drives Me</span>
             </h2>
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
               {values.map((value, index) => (
                 <motion.div
                   key={value.title}
@@ -123,38 +117,43 @@ const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  whileHover={{ scale: 1.03, y: -5 }}
-                  className="bg-card p-8 rounded-2xl shadow-elegant border border-border/50 hover:border-accent/50 transition-all"
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-card rounded-xl p-8 shadow-elegant hover:shadow-glow transition-smooth"
                 >
-                  <value.icon className="w-12 h-12 text-accent mb-4" />
-                  <h3 className="text-2xl font-bold mb-3 text-foreground">{value.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{value.description}</p>
+                  <div className="w-14 h-14 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                    <value.icon className="text-accent" size={28} />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">{value.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {value.description}
+                  </p>
                 </motion.div>
               ))}
             </div>
           </motion.div>
 
-          {/* Journey Section */}
+          {/* Beyond the Code */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
+            className="max-w-4xl mx-auto bg-card rounded-2xl p-8 md:p-12 shadow-elegant"
           >
-            <h2 className="text-4xl font-bold mb-8 text-foreground">
-              Beyond the Code
+            <h2 className="text-3xl font-bold mb-6 text-center">
+              Beyond the <span className="text-accent">Screen</span>
             </h2>
-            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-              When I'm not coding, you'll find me exploring the intersection of technology and society, 
-              reading about emerging innovations, or collaborating with fellow creators on projects that 
-              push boundaries. I believe in continuous learning and staying curious about the world around us.
-            </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              I'm passionate about mentorship and community building, always looking for opportunities to 
-              share knowledge, learn from others, and contribute to causes that align with my values of 
-              innovation, accessibility, and positive social impact.
-            </p>
+            <div className="space-y-6 text-foreground/80">
+              <p className="leading-relaxed">
+                When I'm not designing interfaces or capturing moments through my lens, you'll find me engaged in debate—sharpening my critical thinking and communication skills while exploring diverse perspectives.
+              </p>
+              <p className="leading-relaxed">
+                I'm academically proficient across subjects, constantly challenging myself to learn and grow. My love for the environment drives me to advocate for sustainability, whether through projects, initiatives, or everyday choices.
+              </p>
+              <p className="leading-relaxed">
+                Most importantly, I cherish connections with people. Networking isn't just about building contacts—it's about building relationships, understanding stories, and creating communities where everyone can thrive together.
+              </p>
+            </div>
           </motion.div>
         </div>
       </main>

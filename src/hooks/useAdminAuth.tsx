@@ -39,7 +39,7 @@ export const useInitializeAuth = () => {
       if (user) {
         // Check if user has admin role
         const { data: roleData } = await supabase
-          .from('user_roles')
+          .from('user_roles' as any)
           .select('role')
           .eq('user_id', user.id)
           .eq('role', 'admin')
@@ -63,7 +63,7 @@ export const useInitializeAuth = () => {
           // Defer role check to avoid blocking
           setTimeout(async () => {
             const { data: roleData } = await supabase
-              .from('user_roles')
+              .from('user_roles' as any)
               .select('role')
               .eq('user_id', user.id)
               .eq('role', 'admin')
