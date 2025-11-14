@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Shield } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 
 const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const { isAdmin } = useAdminAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,7 +31,7 @@ const Navigation = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-smooth ${
+      className={`fixed top-0 left-0 right-0 z-[100] transition-smooth ${
         scrolled
           ? "bg-background/80 backdrop-blur-lg shadow-elegant"
           : "bg-transparent"
@@ -56,12 +59,25 @@ const Navigation = () => {
             ))}
           </div>
 
-          <Button
-            className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
-            onClick={() => navigate("/contact")}
-          >
-            Let's Connect
-          </Button>
+          <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/auth")}
+                className="text-accent hover:text-accent hover:bg-accent/10"
+                title="Admin Access"
+              >
+                <Shield className="h-5 w-5" />
+              </Button>
+            )}
+            <Button
+              className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
+              onClick={() => navigate("/contact")}
+            >
+              Let's Connect
+            </Button>
+          </div>
         </div>
       </div>
     </motion.nav>
