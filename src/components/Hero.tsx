@@ -133,8 +133,8 @@ const Hero = () => {
         className="absolute w-[1000px] h-[1000px] rounded-full blur-[200px] pointer-events-none"
         style={{
           background: 'radial-gradient(circle, hsl(var(--accent)) 0%, transparent 70%)',
-          left: mouseX,
-          top: mouseY,
+          left: useTransform(mouseX, v => Math.min(Math.max(v, 200), window.innerWidth - 200)),
+          top: useTransform(mouseY, v => Math.min(Math.max(v, 200), window.innerHeight - 200)),
           x: '-50%',
           y: '-50%',
           opacity: maskOpacity,
@@ -153,7 +153,7 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: `radial-gradient(circle 600px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)`,
+          background: `radial-gradient(circle 600px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%)`,
         }}
       />
       
@@ -161,7 +161,7 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 z-0"
         style={{
-          opacity: maskOpacity,
+          opacity: 0.25,
         }}
       >
         <img
