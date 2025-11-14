@@ -115,7 +115,7 @@ const Hero = () => {
       const centerY = window.innerHeight / 2;
       const distance = Math.sqrt(Math.pow((x as number) - centerX, 2) + Math.pow((y as number) - centerY, 2));
       const maxDistance = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
-      return 0.10 + (1 - distance / maxDistance) * 0.25;
+      return 0.20 + (1 - distance / maxDistance) * 0.20;
     }
   );
 
@@ -133,8 +133,12 @@ const Hero = () => {
         className="absolute w-[1000px] h-[1000px] rounded-full blur-[200px] pointer-events-none"
         style={{
           background: 'radial-gradient(circle, hsl(var(--accent)) 0%, rgba(0,0,0,0) 55%)',
-          left: useTransform(mouseX, v => Math.min(Math.max(v, 200), window.innerWidth - 200)),
-          top: useTransform(mouseY, v => Math.min(Math.max(v, 200), window.innerHeight - 200)),
+          style={{
+          left: 0,
+          top: 0,
+          x: mouseX,
+          y: mouseY,
+          }}
           x: '-50%',
           y: '-50%',
           opacity: 0.3,
@@ -153,7 +157,7 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: `radial-gradient(circle 650px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.80) 100%)`,
+          background: `radial-gradient(circle 650px at ${x}px ${mouseY.get()}px, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.80) 100%)`,
         }}
       />
       
