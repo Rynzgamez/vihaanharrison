@@ -58,16 +58,7 @@ const Hero = () => {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    // Create rotating torus
-    const torusGeometry = new THREE.TorusGeometry(1.5, 0.1, 16, 100);
-    const torusMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ffff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.3
-    });
-    const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-    scene.add(torus);
+    // Torus removed as per user request
 
     let mouseXVal = 0;
     let mouseYVal = 0;
@@ -98,10 +89,6 @@ const Hero = () => {
       particlesMesh.rotation.y += 0.0005;
       particlesMesh.rotation.x += 0.0003;
 
-      // Rotate torus
-      torus.rotation.x += 0.003;
-      torus.rotation.y += 0.005;
-
       renderer.render(scene, camera);
     };
 
@@ -113,13 +100,12 @@ const Hero = () => {
       renderer.dispose();
       particlesGeometry.dispose();
       particlesMaterial.dispose();
-      torusGeometry.dispose();
-      torusMaterial.dispose();
     };
   }, []);
 
-  const gradientX = useTransform(mouseX, [0, window.innerWidth], [0, 100]);
-  const gradientY = useTransform(mouseY, [0, window.innerHeight], [0, 100]);
+  // Transform mouse position to percentages for positioning
+  const gradientX = useTransform(mouseX, [0, window.innerWidth], [-50, 50]);
+  const gradientY = useTransform(mouseY, [0, window.innerHeight], [-50, 50]);
 
   // Mask opacity based on distance from cursor
   const maskOpacity = useTransform(
@@ -147,8 +133,10 @@ const Hero = () => {
         className="absolute w-[1000px] h-[1000px] rounded-full blur-[200px] pointer-events-none"
         style={{
           background: 'radial-gradient(circle, hsl(var(--accent)) 0%, transparent 70%)',
-          x: useTransform(gradientX, (v) => `${v - 50}%`),
-          y: useTransform(gradientY, (v) => `${v - 50}%`),
+          left: mouseX,
+          top: mouseY,
+          x: '-50%',
+          y: '-50%',
           opacity: maskOpacity,
         }}
         animate={{
