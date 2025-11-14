@@ -1,8 +1,5 @@
 project_id = "ynwhokkojcsnuclqyoaz"
 
-[functions.admin-auth]
-verify_jwt = false
-
 [functions.manage-projects]
 verify_jwt = false
 

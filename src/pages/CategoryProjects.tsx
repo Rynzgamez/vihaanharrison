@@ -38,7 +38,7 @@ const CategoryProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showProjectForm, setShowProjectForm] = useState(false);
-  const { isAuthenticated } = useAdminAuth();
+  const { isAdmin } = useAdminAuth();
 
   const categoryName = categories[categorySlug as keyof typeof categories] || "Projects";
 
@@ -86,7 +86,7 @@ const CategoryProjects = () => {
             <span className="text-accent">{categoryName}</span>
           </motion.h1>
           
-          {isAuthenticated && (
+          {isAdmin && (
             <Button 
               onClick={() => setShowProjectForm(true)}
               className="bg-accent hover:bg-accent/90 text-accent-foreground"

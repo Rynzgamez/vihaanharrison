@@ -12,7 +12,7 @@ interface EditableContentProps {
 }
 
 const EditableContent = ({ content, onSave, className = "", multiline = false }: EditableContentProps) => {
-  const { isAuthenticated } = useAdminAuth();
+  const { isAdmin } = useAdminAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
   const [saving, setSaving] = useState(false);
@@ -34,7 +34,7 @@ const EditableContent = ({ content, onSave, className = "", multiline = false }:
     setIsEditing(false);
   };
 
-  if (!isAuthenticated) {
+  if (!isAdmin) {
     return <span className={className}>{content}</span>;
   }
 

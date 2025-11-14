@@ -30,10 +30,8 @@ interface Project {
 const AllProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [password, setPassword] = useState("");
-  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
-  const { isAuthenticated, login } = useAdminAuth();
+  const { isAdmin } = useAdminAuth();
 
   useEffect(() => {
     fetchProjects();
@@ -56,16 +54,6 @@ const AllProjects = () => {
     }
   };
 
-  const handleLogin = async () => {
-    const success = await login(password);
-    if (success) {
-      toast.success('Authenticated successfully');
-      setShowPasswordPrompt(false);
-      setPassword("");
-    } else {
-      toast.error('Invalid password');
-    }
-  };
 
   const featuredProjects = projects.filter(p => p.is_featured).slice(0, 6);
 
@@ -97,7 +85,7 @@ const AllProjects = () => {
 
         <div className="flex justify-end items-center mb-12">
           <div className="flex gap-3">
-            {isAuthenticated && (
+            {isAdmin && (
               <Button 
                 onClick={() => setShowProjectForm(true)}
                 className="bg-accent hover:bg-accent/90 text-accent-foreground"
@@ -105,35 +93,6 @@ const AllProjects = () => {
                 <Plus className="mr-2 h-4 w-4" />
                 Add Project
               </Button>
-            )}
-            
-            {!isAuthenticated && (
-              <Dialog open={showPasswordPrompt} onOpenChange={setShowPasswordPrompt}>
-                <DialogTrigger asChild>
-                  <Button variant="outline">Admin Access</Button>
-                </DialogTrigger>
-                <DialogContent className="bg-card">
-                  <DialogHeader>
-                    <DialogTitle className="text-foreground">Admin Authentication</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="password" className="text-foreground">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                        className="bg-background text-foreground border-border"
-                      />
-                    </div>
-                    <Button onClick={handleLogin} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                      Login
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
             )}
           </div>
         </div>
