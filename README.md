@@ -1,73 +1,139 @@
-# Welcome to your Lovable project
+# 🌐 Vihaan Harrison | Personal Portfolio
 
-## Project info
+Welcome to my **personal portfolio**.
 
-**URL**: https://lovable.dev/projects/1b0125a8-f002-4d45-a726-f52dc8965740
+This website is a consolidated space showcasing my journey across academics, technology, leadership, public speaking, creativity, athletics, and community engagement. Over the years, I’ve explored diverse fields — from AI development and STEM research to diplomacy, photography, dance, and environmental activism. This platform organizes all of that work into **six core categories**, each reflecting a different dimension of who I am and what I do.
 
-## How can I edit this code?
+My goal with this website is simple:  
+**to present my achievements, projects, passions, and initiatives in a structured, meaningful, and transparent way — while continuing to grow, learn, and contribute.**
 
-There are several ways of editing your application.
+Below is an overview of the six sections featured on this site.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1b0125a8-f002-4d45-a726-f52dc8965740) and start prompting.
+## 1. 🎓 Academic & Scholarly Achievements
 
-Changes made via Lovable will be committed automatically to this repo.
+I have always aimed for academic excellence and intellectual curiosity.  
+This section highlights:
 
-**Use your preferred IDE**
+- Scholastic performance  
+- Olympiad results  
+- Academic leadership roles  
+- Certified programs and courses  
+- ASSET distinctions  
+- Scholar badges  
+- STEM certifications  
+- Consistently high ranking across core school subjects  
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+It also includes national and international topper positions and various academic competition results.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 2. 💻 Technology, Coding & Innovation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+This category showcases my work in:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Artificial intelligence & machine learning  
+- App development  
+- Robotics  
+- STEM research  
+- Creative tech solutions  
 
-# Step 3: Install the necessary dependencies.
-npm i
+Featured projects include:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- Award-winning **GreenergyX**  
+- On-device AI detectors  
+- Environmental apps  
+- Forecasting engines  
+- Classification systems  
+- Robotics contributions (including FLL)  
 
-**Edit a file directly in GitHub**
+Many of these projects have been recognized at national competitions, coding events, and innovation challenges.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 3. 🌱 Leadership, Volunteering & Environmental Action
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Leadership is an essential part of my identity.
 
-## What technologies are used for this project?
+This section includes:
 
-This project is built with:
+- My role as **Student Council President**  
+- Environmental advocacy (e.g., **RunBlue UAE Country Captain**)  
+- Charity drives and community programs I’ve organized  
+- Volunteering in climate discussions, workshops, humanitarian support campaigns  
+- Long-term association with the **Emirates Environmental Group**  
+- Sustainability projects and environmental activism  
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 4. 🌍 Model United Nations (MUN) & Public Speaking
 
-Simply open [Lovable](https://lovable.dev/projects/1b0125a8-f002-4d45-a726-f52dc8965740) and click on Share -> Publish.
+Public speaking, diplomacy, and global affairs play a significant role in my development.
 
-## Can I connect a custom domain to my Lovable project?
+This section compiles:
 
-Yes, you can!
+- MUN conferences I’ve attended  
+- Awards such as:  
+  - Best Delegate  
+  - Runner-Up Best Delegate  
+  - Best Researcher  
+  - Verbal Mentions  
+- Leadership roles including:  
+  - Co-Chair  
+  - Head of Crisis  
+  - Head of Outreach  
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+This reflects my progression from delegate to leadership positions in MUN.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 5. 🎭 Arts, Athletics & Personal Passions
+
+I believe in maintaining a balance between academics and creativity.
+
+This category includes:
+
+- Dance performances  
+- Professional photography work  
+- Badminton participation at regional levels  
+- Other extracurricular and creative passions  
+
+These pursuits contribute to my personal identity and help me stay well-rounded.
+
+---
+
+## 6. 🏆 Recognition & Awards
+
+A consolidated list of major recognitions across:
+
+- Olympiads  
+- Interschool competitions  
+- Technology and innovation awards  
+- Environmental acknowledgments  
+- Sports achievements  
+- Cultural recognitions  
+- Leadership honors  
+
+This section reflects my continuous efforts across multiple domains.
+
+---
+
+## 🎯 Purpose of This Portfolio
+
+This website serves as:
+
+- A personal documentation of my growth  
+- A portfolio showcasing my work across diverse fields  
+- A reference for academic applications and leadership submissions  
+- A platform to share my projects, thought process, and ambitions  
+
+I continue to update this space with new projects, achievements, and milestones as I evolve.
+
+---
+
+## 📬 Contact
+
+For collaborations, academic opportunities, or project inquiries, feel free to connect using the contact details listed on the website.
+
+---
