@@ -1,7 +1,12 @@
-import { create } from 'zustand';
-import { supabase } from '@/integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
-import { useEffect } from 'react';
+import { create } from "zustand";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
+import { useEffect } from "react";
+
+const ALLOWED_EMAILS = [
+  "vihaanharrison@gmail.com",
+  "s12281.dpssharjah@gmail.com"
+];
 
 interface AdminAuthState {
   user: User | null;
@@ -26,55 +31,37 @@ export const useAdminAuth = create<AdminAuthState>((set) => ({
   }
 }));
 
-// Hook to initialize auth state
+// Initialize auth state
 export const useInitializeAuth = () => {
   const { setUser, setIsAdmin, setLoading } = useAdminAuth();
 
+  // Helper: determine if a user is admin
+  const updateAdminStatus = (user: User | null) => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+
+    const email = user.email?.toLowerCase() ?? "";
+    const isAllowed = ALLOWED_EMAILS.includes(email);
+    setIsAdmin(isAllowed);
+  };
+
   useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
       const user = session?.user ?? null;
       setUser(user);
-      
-      if (user) {
-        // Check if user has admin role
-        const { data: roleData } = await supabase
-          .from('admin_users' as any)
-          .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-        
-        setIsAdmin(!!roleData);
-      } else {
-        setIsAdmin(false);
-      }
-      
+      updateAdminStatus(user);
       setLoading(false);
     });
 
-    // Listen for auth changes
+    // Auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         const user = session?.user ?? null;
         setUser(user);
-        
-        if (user) {
-          // Defer role check to avoid blocking
-          setTimeout(async () => {
-            const { data: roleData } = await supabase
-              .from('user_roles' as any)
-              .select('role')
-              .eq('user_id', user.id)
-              .eq('role', 'admin')
-              .maybeSingle();
-            
-            setIsAdmin(!!roleData);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-        
+        updateAdminStatus(user);
         setLoading(false);
       }
     );
