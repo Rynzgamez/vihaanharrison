@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Upload, X } from "lucide-react";
 
 interface ProjectFormModalProps {
   open: boolean;
@@ -29,16 +30,82 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
     date: editProject?.date || new Date().toISOString().split('T')[0],
     is_featured: editProject?.is_featured || false,
   });
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>(editProject?.image_urls || []);
   const [loading, setLoading] = useState(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const validFiles = selectedFiles.filter(file => {
+      const isImage = file.type.startsWith('image/');
+      const isPDF = file.type === 'application/pdf';
+      const isUnder10MB = file.size <= 10 * 1024 * 1024;
+      
+      if (!isImage && !isPDF) {
+        toast.error(`${file.name} is not an image or PDF`);
+        return false;
+      }
+      if (!isUnder10MB) {
+        toast.error(`${file.name} is larger than 10MB`);
+        return false;
+      }
+      return true;
+    });
+    
+    setFiles([...files, ...validFiles]);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const removeUploadedUrl = (index: number) => {
+    setUploadedUrls(uploadedUrls.filter((_, i) => i !== index));
+  };
+
+  const uploadFiles = async () => {
+    const urls: string[] = [];
+    
+    for (const file of files) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `projects/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('project-files')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage
+        .from('project-files')
+        .getPublicUrl(filePath);
+
+      urls.push(data.publicUrl);
+    }
+    
+    return urls;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      let allUrls = [...uploadedUrls];
+      
+      if (files.length > 0) {
+        const newUrls = await uploadFiles();
+        allUrls = [...allUrls, ...newUrls];
+      }
+
       const projectData = {
         ...formData,
         tags: formData.tags.split(",").map(tag => tag.trim()).filter(Boolean),
+        image_urls: allUrls,
       };
 
       const { error } = editProject
@@ -66,6 +133,8 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
         date: new Date().toISOString().split('T')[0],
         is_featured: false,
       });
+      setFiles([]);
+      setUploadedUrls([]);
     } catch (error) {
       console.error('Error saving project:', error);
       toast.error('Failed to save project');
@@ -192,13 +261,83 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
             />
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div>
+            <Label htmlFor="is_featured" className="text-foreground">Mark as Featured</Label>
             <Checkbox
               id="is_featured"
               checked={formData.is_featured}
               onCheckedChange={(checked) => setFormData({ ...formData, is_featured: !!checked })}
             />
-            <Label htmlFor="is_featured" className="text-foreground">Mark as Featured</Label>
+          </div>
+
+          {/* File Upload Section */}
+          <div>
+            <Label className="text-foreground mb-2 block">Images & PDFs</Label>
+            <div className="border-2 border-dashed border-accent/30 rounded-lg p-4 hover:border-accent/50 transition-colors">
+              <input
+                type="file"
+                id="file-upload"
+                multiple
+                accept="image/*,application/pdf"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <label
+                htmlFor="file-upload"
+                className="flex flex-col items-center justify-center cursor-pointer"
+              >
+                <Upload className="w-8 h-8 text-accent mb-2" />
+                <span className="text-sm text-muted-foreground">
+                  Click to upload images or PDFs (max 10MB each)
+                </span>
+              </label>
+            </div>
+
+            {/* Display uploaded files from database */}
+            {uploadedUrls.length > 0 && (
+              <div className="mt-3 space-y-2">
+                <p className="text-sm text-muted-foreground">Uploaded files:</p>
+                {uploadedUrls.map((url, index) => (
+                  <div key={index} className="flex items-center justify-between bg-accent/10 p-2 rounded">
+                    <span className="text-sm text-foreground truncate flex-1">
+                      {url.split('/').pop()}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeUploadedUrl(index)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Display selected files to upload */}
+            {files.length > 0 && (
+              <div className="mt-3 space-y-2">
+                <p className="text-sm text-muted-foreground">Selected files to upload:</p>
+                {files.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-background p-2 rounded border border-border">
+                    <span className="text-sm text-foreground truncate flex-1">
+                      {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(index)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
