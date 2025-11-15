@@ -60,22 +60,20 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-3 relative z-[150]">
-            {isAdmin && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/auth")}
-                className="text-accent hover:text-accent hover:bg-accent/10 border border-accent/30"
-                title="Admin Access"
-              >
-                <Shield className="h-5 w-5" />
-              </Button>
-            )}
             <Button
               className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
               onClick={() => navigate("/contact")}
             >
               Let's Connect
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/auth")}
+              className="text-accent hover:text-accent hover:bg-accent/10 border border-accent/30"
+              title="Admin Access"
+            >
+              <Shield className="h-5 w-5" />
             </Button>
           </div>
         </div>

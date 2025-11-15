@@ -133,10 +133,10 @@ const Hero = () => {
         className="absolute w-[1000px] h-[1000px] rounded-full blur-[200px] pointer-events-none"
         style={{
           background: 'radial-gradient(circle, hsl(var(--accent)) 0%, rgba(0,0,0,0) 55%)',
-          left: 0,
-          top: 0,
-          x: mouseX,
-          y: mouseY,
+          left: mouseX,
+          top: mouseY,
+          x: '-50%',
+          y: '-50%',
           opacity: 0.3,
         }}
         animate={{
