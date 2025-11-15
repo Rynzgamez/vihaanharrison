@@ -103,20 +103,10 @@ const Hero = () => {
     };
   }, []);
 
-  // Transform mouse position to percentages for positioning
-  const gradientX = useTransform(mouseX, [0, window.innerWidth], [-50, 50]);
-  const gradientY = useTransform(mouseY, [0, window.innerHeight], [-50, 50]);
-
-  // Mask opacity based on distance from cursor
-  const maskOpacity = useTransform(
+  // Transform mouse position for black overlay gradient
+  const blackOverlay = useTransform(
     [mouseX, mouseY],
-    ([x, y]) => {
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const distance = Math.sqrt(Math.pow((x as number) - centerX, 2) + Math.pow((y as number) - centerY, 2));
-      const maxDistance = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
-      return 0.20 + (1 - distance / maxDistance) * 0.20;
-    }
+    ([x, y]) => `radial-gradient(circle 650px at ${x}px ${y}px, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.80) 100%)`
   );
 
   return (
@@ -153,7 +143,7 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: `radial-gradient(circle 650px at ${mouseX.get()}px ${mouseY.get()}px, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.80) 100%)`,
+          background: blackOverlay,
         }}
       />
       
