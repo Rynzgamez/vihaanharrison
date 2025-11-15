@@ -36,22 +36,22 @@ const Hero = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.position.z = 5;
 
-    // Create floating particles
+    // Create floating particles - more prominent and spread apart
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 1000;
+    const particlesCount = 800;
     const posArray = new Float32Array(particlesCount * 3);
 
     for (let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 10;
+      posArray[i] = (Math.random() - 0.5) * 20; // Increased spread
     }
 
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.005,
+      size: 0.015, // Increased size for more prominence
       color: 0x00ffff,
       transparent: true,
-      opacity: 0.8,
+      opacity: 1, // Increased opacity
       blending: THREE.AdditiveBlending
     });
 

@@ -29,11 +29,52 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
       <CursorEffect />
       <Navigation />
       
-      <main className="pt-32 pb-24">
+      {/* Animated background blobs */}
+      <motion.div 
+        className="absolute top-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-[120px] pointer-events-none"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div 
+        className="absolute bottom-40 left-20 w-80 h-80 bg-accent/15 rounded-full blur-[100px] pointer-events-none"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1
+        }}
+      />
+      <motion.div 
+        className="absolute top-1/2 left-1/3 w-64 h-64 bg-accent/8 rounded-full blur-[90px] pointer-events-none"
+        animate={{
+          x: [0, 50, 0],
+          y: [0, -30, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2
+        }}
+      />
+      
+      <main className="pt-32 pb-24 relative z-10">
         <div className="container mx-auto px-6">
           {/* Hero Section */}
           <motion.div
@@ -68,7 +109,7 @@ const About = () => {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="relative"
               >
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-accent/20">
                   <img
                     src={profilePhoto}
                     alt="Vihaan Harrison"
@@ -76,8 +117,60 @@ const About = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 </div>
-                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-accent/20 rounded-full blur-3xl" />
-                <div className="absolute -top-6 -left-6 w-24 h-24 bg-accent/10 rounded-full blur-2xl" />
+                {/* Enhanced blur effects around image */}
+                <motion.div 
+                  className="absolute -bottom-8 -right-8 w-40 h-40 bg-accent/30 rounded-full blur-[80px]"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.5, 0.3],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <motion.div 
+                  className="absolute -top-8 -left-8 w-32 h-32 bg-accent/20 rounded-full blur-[60px]"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.2, 0.4, 0.2],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1
+                  }}
+                />
+                {/* Decorative icons */}
+                <motion.div
+                  className="absolute -top-4 -right-4 bg-accent/20 backdrop-blur-sm p-3 rounded-full border border-accent/30"
+                  animate={{
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Camera className="w-5 h-5 text-accent" />
+                </motion.div>
+                <motion.div
+                  className="absolute bottom-4 -left-4 bg-accent/20 backdrop-blur-sm p-3 rounded-full border border-accent/30"
+                  animate={{
+                    y: [0, 10, 0],
+                  }}
+                  transition={{
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.5
+                  }}
+                >
+                  <Palette className="w-5 h-5 text-accent" />
+                </motion.div>
               </motion.div>
             </div>
           </motion.div>
