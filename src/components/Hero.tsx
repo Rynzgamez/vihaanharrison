@@ -2,10 +2,13 @@ import { motion, useMotionValue, useTransform } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroBackground from "@/assets/hero-bg-fluid.png";
+import logo from "@/assets/logo.png";
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
 
 const Hero = () => {
+  const navigate = useNavigate();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -169,6 +172,16 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center max-w-4xl mx-auto"
         >
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8 flex justify-center"
+          >
+            <img src={logo} alt="Vihaan Harrison Logo" className="h-32 w-auto" />
+          </motion.div>
+
           <motion.h1
             className="text-5xl md:text-7xl font-bold mb-6 text-accent"
             initial={{ opacity: 0, filter: "blur(10px)" }}
@@ -188,7 +201,7 @@ const Hero = () => {
           </motion.h2>
 
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground mb-12"
+            className="text-lg md:text-xl text-muted-foreground mb-8"
             initial={{ opacity: 0, filter: "blur(10px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.8 }}
@@ -215,12 +228,10 @@ const Hero = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-              onClick={() =>
-                document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })
-              }
+              className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-lg"
+              onClick={() => navigate("/about")}
             >
-              Learn More
+              More About Me
             </Button>
           </motion.div>
         </motion.div>

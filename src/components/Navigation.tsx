@@ -44,7 +44,7 @@ const Navigation = () => {
             className="flex items-center"
             whileHover={{ scale: 1.05 }}
           >
-            <img src={logo} alt="Vihaan Harrison" className="h-10 w-auto" />
+            <img src={logo} alt="Vihaan Harrison" className="h-16 w-auto" />
           </motion.a>
 
           <div className="hidden md:flex items-center gap-8">
