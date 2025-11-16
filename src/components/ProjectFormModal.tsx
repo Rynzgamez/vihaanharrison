@@ -110,10 +110,17 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
 
       const { error } = editProject
         ? await supabase.functions.invoke('manage-projects', {
-            body: { action: 'update', id: editProject.id, ...projectData }
+            body: { 
+              action: 'update', 
+              projectId: editProject.id, 
+              projectData 
+            }
           })
         : await supabase.functions.invoke('manage-projects', {
-            body: { action: 'create', ...projectData }
+            body: { 
+              action: 'create', 
+              projectData 
+            }
           });
 
       if (error) throw error;

@@ -41,10 +41,17 @@ const ActivityFormModal = ({ open, onOpenChange, onSuccess, activity }: Activity
 
       const { error } = activity
         ? await supabase.functions.invoke('manage-activities', {
-            body: { action: 'update', id: activity.id, ...activityData }
+            body: { 
+              action: 'update', 
+              activityId: activity.id, 
+              activityData 
+            }
           })
         : await supabase.functions.invoke('manage-activities', {
-            body: { action: 'create', ...activityData }
+            body: { 
+              action: 'create', 
+              activityData 
+            }
           });
 
       if (error) throw error;
