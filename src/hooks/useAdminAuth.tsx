@@ -3,11 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useEffect } from "react";
 
-const ALLOWED_EMAILS = [
-  "vihaanharrison@gmail.com",
-  "s12281.dpssharjah@gmail.com"
-];
-
 interface AdminAuthState {
   user: User | null;
   isAdmin: boolean;
@@ -35,16 +30,20 @@ export const useAdminAuth = create<AdminAuthState>((set) => ({
 export const useInitializeAuth = () => {
   const { setUser, setIsAdmin, setLoading } = useAdminAuth();
 
-  // Helper: determine if a user is admin
-  const updateAdminStatus = (user: User | null) => {
-    if (!user) {
+  // Helper: determine if a user is admin by checking user_roles table
+  const checkAdminStatus = async (userId: string) => {
+    const { data, error } = await supabase.rpc('has_role', {
+      _user_id: userId,
+      _role: 'admin'
+    });
+
+    if (error) {
+      console.error('Error checking admin status:', error);
       setIsAdmin(false);
       return;
     }
 
-    const email = user.email?.toLowerCase() ?? "";
-    const isAllowed = ALLOWED_EMAILS.includes(email);
-    setIsAdmin(isAllowed);
+    setIsAdmin(data === true);
   };
 
   useEffect(() => {
@@ -52,7 +51,13 @@ export const useInitializeAuth = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const user = session?.user ?? null;
       setUser(user);
-      updateAdminStatus(user);
+      
+      if (user) {
+        checkAdminStatus(user.id);
+      } else {
+        setIsAdmin(false);
+      }
+      
       setLoading(false);
     });
 
@@ -61,7 +66,15 @@ export const useInitializeAuth = () => {
       (_event, session) => {
         const user = session?.user ?? null;
         setUser(user);
-        updateAdminStatus(user);
+        
+        if (user) {
+          setTimeout(() => {
+            checkAdminStatus(user.id);
+          }, 0);
+        } else {
+          setIsAdmin(false);
+        }
+        
         setLoading(false);
       }
     );

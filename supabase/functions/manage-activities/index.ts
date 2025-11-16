@@ -11,31 +11,55 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { action, password, activityData, activityId } = await req.json();
-
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // Verify password
-    const { data: credentials } = await supabaseClient
-      .from('admin_credentials')
-      .select('password_hash')
-      .single();
-
-    if (password !== credentials?.password_hash) {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
       return new Response(
         JSON.stringify({ success: false, error: 'Unauthorized' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
       );
     }
 
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    // Get the authenticated user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unauthorized' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Check if user has admin role
+    const { data: hasAdminRole, error: roleError } = await supabaseClient
+      .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+
+    if (roleError || !hasAdminRole) {
+      console.error('Role check failed:', roleError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Forbidden: Admin access required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
+    // Use service role client for admin operations
+    const adminClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const { action, activityData, activityId } = await req.json();
+
     let result;
 
     switch (action) {
       case 'create':
-        result = await supabaseClient
+        result = await adminClient
           .from('activities')
           .insert([activityData])
           .select()
@@ -43,7 +67,7 @@ Deno.serve(async (req) => {
         break;
 
       case 'update':
-        result = await supabaseClient
+        result = await adminClient
           .from('activities')
           .update(activityData)
           .eq('id', activityId)
@@ -52,7 +76,7 @@ Deno.serve(async (req) => {
         break;
 
       case 'delete':
-        result = await supabaseClient
+        result = await adminClient
           .from('activities')
           .delete()
           .eq('id', activityId);
@@ -68,7 +92,7 @@ Deno.serve(async (req) => {
     if (result.error) {
       console.error('Database error:', result.error);
       return new Response(
-        JSON.stringify({ success: false, error: result.error.message }),
+        JSON.stringify({ success: false, error: 'Operation failed' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
