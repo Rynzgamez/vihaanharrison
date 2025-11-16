@@ -24,6 +24,9 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
+  const [accessCode, setAccessCode] = useState("");
+  const [activeTab, setActiveTab] = useState("email");
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -37,32 +40,41 @@ const Auth = () => {
       });
       
       if (signInError) {
-        if (signInError.message.includes('Invalid login credentials')) {
-          const { error: signUpError } = await supabase.auth.signUp({
-            email: normalizedEmail,
-            password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/`
-            }
-          });
-          
-          if (signUpError) throw signUpError;
-          
-          const { error: retrySignInError } = await supabase.auth.signInWithPassword({
-            email: normalizedEmail,
-            password
-          });
-          
-          if (retrySignInError) throw retrySignInError;
-        } else {
-          throw signInError;
-        }
+        toast.error(signInError.message || 'Authentication failed');
+        return;
       }
       
       toast.success('Welcome to Admin Hub!');
       navigate("/");
     } catch (error: any) {
       toast.error(error.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAccessCodeLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Use access code as password for the admin account
+      const adminEmail = "vihaanharrison@gmail.com";
+      
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: adminEmail,
+        password: accessCode
+      });
+      
+      if (signInError) {
+        toast.error('Invalid access code');
+        return;
+      }
+      
+      toast.success('Welcome to Admin Hub!');
+      navigate("/");
+    } catch (error: any) {
+      toast.error('Authentication failed');
     } finally {
       setLoading(false);
     }
@@ -85,42 +97,76 @@ const Auth = () => {
           </p>
         </div>
         
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <Label htmlFor="email">Admin Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="admin@email.com"
-              className="border-accent/30 focus:border-accent"
-            />
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="email">Email Login</TabsTrigger>
+            <TabsTrigger value="code">Access Code</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="email">
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="email">Admin Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="admin@email.com"
+                  className="border-accent/30 focus:border-accent"
+                />
+              </div>
 
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-              minLength={6}
-              className="border-accent/30 focus:border-accent"
-            />
-          </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  minLength={6}
+                  className="border-accent/30 focus:border-accent"
+                />
+              </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
-            disabled={loading}
-          >
-            {loading ? 'Authenticating...' : 'Access Admin Hub'}
-          </Button>
-        </form>
+              <Button
+                type="submit"
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
+                disabled={loading}
+              >
+                {loading ? 'Authenticating...' : 'Access Admin Hub'}
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="code">
+            <form onSubmit={handleAccessCodeLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="accessCode">Admin Access Code</Label>
+                <Input
+                  id="accessCode"
+                  type="password"
+                  value={accessCode}
+                  onChange={(e) => setAccessCode(e.target.value)}
+                  required
+                  placeholder="Enter access code"
+                  className="border-accent/30 focus:border-accent"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow"
+                disabled={loading}
+              >
+                {loading ? 'Authenticating...' : 'Access Admin Hub'}
+              </Button>
+            </form>
+          </TabsContent>
+        </Tabs>
 
         <div className="mt-6 text-center">
           <button
