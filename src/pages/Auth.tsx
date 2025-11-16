@@ -27,10 +27,13 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    // Only redirect if user is logged in AND they're not on the auth page intentionally
+    if (user && window.location.pathname !== "/auth") {
       navigate("/");
     }
   }, [user, navigate]);
+
+  const ADMIN_PASSWORD = "0bby4l!3n";
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,18 +41,44 @@ const Auth = () => {
 
     try {
       // Check if email is in the allowed list
-      if (!ALLOWED_EMAILS.includes(email.toLowerCase().trim())) {
+      const normalizedEmail = email.toLowerCase().trim();
+      if (!ALLOWED_EMAILS.includes(normalizedEmail)) {
         toast.error('Access denied. This email is not authorized for admin access.');
         setLoading(false);
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
+      // Try to sign in with provided password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
         password
       });
       
-      if (error) throw error;
+      if (signInError) {
+        // If sign in fails, check if it's because account doesn't exist
+        if (signInError.message.includes('Invalid login credentials')) {
+          // Try to create account with admin password
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: normalizedEmail,
+            password: ADMIN_PASSWORD,
+            options: {
+              emailRedirectTo: `${window.location.origin}/`
+            }
+          });
+          
+          if (signUpError) throw signUpError;
+          
+          // Now sign in with the admin password
+          const { error: retrySignInError } = await supabase.auth.signInWithPassword({
+            email: normalizedEmail,
+            password: ADMIN_PASSWORD
+          });
+          
+          if (retrySignInError) throw retrySignInError;
+        } else {
+          throw signInError;
+        }
+      }
       
       toast.success('Welcome to Admin Hub!');
       navigate("/");
@@ -71,17 +100,17 @@ const Auth = () => {
         return;
       }
 
-      // Sign in with the first allowed email using access code as password
+      // Sign in with the first allowed email using admin password
       const { error } = await supabase.auth.signInWithPassword({
         email: ALLOWED_EMAILS[0],
-        password: accessCode
+        password: ADMIN_PASSWORD
       });
       
       if (error) {
         // If account doesn't exist, create it
         const { error: signUpError } = await supabase.auth.signUp({
           email: ALLOWED_EMAILS[0],
-          password: accessCode,
+          password: ADMIN_PASSWORD,
           options: {
             emailRedirectTo: `${window.location.origin}/`
           }
@@ -89,11 +118,17 @@ const Auth = () => {
         
         if (signUpError) throw signUpError;
         
-        toast.success('Admin account created! Please check email to confirm.');
-      } else {
-        toast.success('Welcome to Admin Hub!');
-        navigate("/");
+        // Sign in after creating account
+        const { error: retrySignInError } = await supabase.auth.signInWithPassword({
+          email: ALLOWED_EMAILS[0],
+          password: ADMIN_PASSWORD
+        });
+        
+        if (retrySignInError) throw retrySignInError;
       }
+      
+      toast.success('Welcome to Admin Hub!');
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || 'Authentication failed');
     } finally {

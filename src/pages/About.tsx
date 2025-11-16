@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import CursorEffect from "@/components/CursorEffect";
 import { Camera, Palette, Users, Leaf } from "lucide-react";
 import profilePhoto from "@/assets/profile-photo.jpg";
+import logo from "@/assets/logo.png";
 
 const About = () => {
   const values = [
@@ -89,6 +90,16 @@ const About = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
+                {/* Logo */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8 }}
+                  className="mb-8 flex justify-start"
+                >
+                  <img src={logo} alt="Vihaan Harrison Logo" className="h-24 w-auto" />
+                </motion.div>
+
                 <h1 className="text-5xl md:text-6xl font-bold mb-6">
                   Hi, I'm <span className="text-accent">Vihaan Harrison</span>
                 </h1>
