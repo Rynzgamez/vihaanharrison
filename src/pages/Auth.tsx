@@ -43,6 +43,19 @@ const Auth = () => {
         toast.error(signInError.message || 'Authentication failed');
         return;
       }
+
+      // Ensure admin role for approved email on the backend, then refresh local admin state
+      try {
+        await supabase.functions.invoke('manage-roles', { body: { action: 'ensure_admin_for_email' } });
+        const { data: { user: current } } = await supabase.auth.getUser();
+        if (current) {
+          const { data: hasRole } = await supabase.rpc('has_role', { _user_id: current.id, _role: 'admin' });
+          const { setIsAdmin } = useAdminAuth.getState();
+          setIsAdmin(hasRole === true);
+        }
+      } catch (roleErr) {
+        console.warn('Role ensure failed:', roleErr);
+      }
       
       toast.success('Welcome to Admin Hub!');
       navigate("/");
@@ -69,6 +82,19 @@ const Auth = () => {
       if (signInError) {
         toast.error('Invalid access code');
         return;
+      }
+
+      // Ensure admin role for approved email on the backend, then refresh local admin state
+      try {
+        await supabase.functions.invoke('manage-roles', { body: { action: 'ensure_admin_for_email' } });
+        const { data: { user: current } } = await supabase.auth.getUser();
+        if (current) {
+          const { data: hasRole } = await supabase.rpc('has_role', { _user_id: current.id, _role: 'admin' });
+          const { setIsAdmin } = useAdminAuth.getState();
+          setIsAdmin(hasRole === true);
+        }
+      } catch (roleErr) {
+        console.warn('Role ensure failed:', roleErr);
       }
       
       toast.success('Welcome to Admin Hub!');
