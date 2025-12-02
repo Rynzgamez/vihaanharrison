@@ -16,7 +16,8 @@ interface ActivityFormModalProps {
     title: string;
     category: string;
     description: string;
-    date: string;
+    start_date: string;
+    end_date?: string;
   };
 }
 
@@ -24,7 +25,8 @@ const ActivityFormModal = ({ open, onOpenChange, onSuccess, activity }: Activity
   const [title, setTitle] = useState(activity?.title || "");
   const [category, setCategory] = useState(activity?.category || "");
   const [description, setDescription] = useState(activity?.description || "");
-  const [date, setDate] = useState(activity?.date || new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(activity?.start_date || new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(activity?.end_date || "");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,7 +38,8 @@ const ActivityFormModal = ({ open, onOpenChange, onSuccess, activity }: Activity
         title,
         category,
         description,
-        date
+        start_date: startDate,
+        end_date: endDate || null
       };
 
       const { error } = activity
@@ -64,7 +67,8 @@ const ActivityFormModal = ({ open, onOpenChange, onSuccess, activity }: Activity
       setTitle("");
       setCategory("");
       setDescription("");
-      setDate(new Date().toISOString().split('T')[0]);
+      setStartDate(new Date().toISOString().split('T')[0]);
+      setEndDate("");
     } catch (error) {
       console.error('Error saving activity:', error);
       toast.error('Failed to save activity');
@@ -104,16 +108,28 @@ const ActivityFormModal = ({ open, onOpenChange, onSuccess, activity }: Activity
             />
           </div>
 
-          <div>
-            <Label htmlFor="date" className="text-foreground">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-              className="bg-background text-foreground border-border"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="start_date" className="text-foreground">Start Date</Label>
+              <Input
+                id="start_date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                required
+                className="bg-background text-foreground border-border"
+              />
+            </div>
+            <div>
+              <Label htmlFor="end_date" className="text-foreground">End Date (Optional)</Label>
+              <Input
+                id="end_date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="bg-background text-foreground border-border"
+              />
+            </div>
           </div>
 
           <div>

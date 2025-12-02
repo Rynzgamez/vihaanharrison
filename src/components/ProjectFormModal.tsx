@@ -27,7 +27,8 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
     github_url: editProject?.github_url || "",
     live_url: editProject?.live_url || "",
     writeup: editProject?.writeup || "",
-    date: editProject?.date || new Date().toISOString().split('T')[0],
+    start_date: editProject?.start_date || new Date().toISOString().split('T')[0],
+    end_date: editProject?.end_date || "",
     is_featured: editProject?.is_featured || false,
   });
   const [files, setFiles] = useState<File[]>([]);
@@ -137,7 +138,8 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
         github_url: "",
         live_url: "",
         writeup: "",
-        date: new Date().toISOString().split('T')[0],
+        start_date: new Date().toISOString().split('T')[0],
+        end_date: "",
         is_featured: false,
       });
       setFiles([]);
@@ -189,16 +191,28 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
             </select>
           </div>
 
-          <div>
-            <Label htmlFor="date" className="text-foreground">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              required
-              className="bg-background text-foreground border-border"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="start_date" className="text-foreground">Start Date</Label>
+              <Input
+                id="start_date"
+                type="date"
+                value={formData.start_date}
+                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                required
+                className="bg-background text-foreground border-border"
+              />
+            </div>
+            <div>
+              <Label htmlFor="end_date" className="text-foreground">End Date (Optional)</Label>
+              <Input
+                id="end_date"
+                type="date"
+                value={formData.end_date}
+                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                className="bg-background text-foreground border-border"
+              />
+            </div>
           </div>
 
           <div>

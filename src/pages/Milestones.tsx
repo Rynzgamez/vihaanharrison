@@ -14,7 +14,8 @@ interface Activity {
   title: string;
   category: string;
   description: string;
-  date: string;
+  start_date: string;
+  end_date?: string;
 }
 
 const Milestones = () => {
@@ -121,7 +122,10 @@ const Milestones = () => {
                       <div className="flex items-start justify-between mb-3">
                         <span className="text-sm text-accent font-semibold">{activity.category}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground">{activity.date}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {new Date(activity.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                            {activity.end_date && ` - ${new Date(activity.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                          </span>
                           {isAdmin && (
                             <div className="flex gap-1">
                               <Button size="icon" variant="ghost" onClick={() => handleEdit(activity)} className="h-8 w-8"><Edit className="h-4 w-4 text-accent" /></Button>

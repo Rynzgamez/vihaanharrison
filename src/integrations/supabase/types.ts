@@ -20,8 +20,10 @@ export type Database = {
           created_at: string
           date: string
           description: string
+          end_date: string | null
           id: string
           image_urls: string[] | null
+          start_date: string
           title: string
           updated_at: string
         }
@@ -30,8 +32,10 @@ export type Database = {
           created_at?: string
           date?: string
           description: string
+          end_date?: string | null
           id?: string
           image_urls?: string[] | null
+          start_date?: string
           title: string
           updated_at?: string
         }
@@ -40,8 +44,10 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string
+          end_date?: string | null
           id?: string
           image_urls?: string[] | null
+          start_date?: string
           title?: string
           updated_at?: string
         }
@@ -82,12 +88,14 @@ export type Database = {
           created_at: string
           date: string
           description: string
+          end_date: string | null
           github_url: string | null
           id: string
           image_urls: string[] | null
           impact: string | null
           is_featured: boolean | null
           live_url: string | null
+          start_date: string
           tags: string[] | null
           title: string
           updated_at: string
@@ -98,12 +106,14 @@ export type Database = {
           created_at?: string
           date?: string
           description: string
+          end_date?: string | null
           github_url?: string | null
           id?: string
           image_urls?: string[] | null
           impact?: string | null
           is_featured?: boolean | null
           live_url?: string | null
+          start_date?: string
           tags?: string[] | null
           title: string
           updated_at?: string
@@ -114,12 +124,14 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string
+          end_date?: string | null
           github_url?: string | null
           id?: string
           image_urls?: string[] | null
           impact?: string | null
           is_featured?: boolean | null
           live_url?: string | null
+          start_date?: string
           tags?: string[] | null
           title?: string
           updated_at?: string

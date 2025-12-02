@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import AllProjects from "./pages/AllProjects";
 import Timeline from "./pages/Timeline";
 import Milestones from "./pages/Milestones";
+import MyWork from "./pages/MyWork";
 import CategoryProjects from "./pages/CategoryProjects";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -29,6 +30,7 @@ const AppContent = () => {
         <Route path="/projects" element={<AllProjects />} />
         <Route path="/timeline" element={<Timeline />} />
         <Route path="/milestones" element={<Milestones />} />
+        <Route path="/my-work" element={<MyWork />} />
         <Route path="/category/:categorySlug" element={<CategoryProjects />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
