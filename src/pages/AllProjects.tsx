@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
-import { ExternalLink, Github, Plus } from "lucide-react";
+import { ExternalLink, Github, Plus, Edit, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import ProjectFormModal from "@/components/ProjectFormModal";
 import CursorEffect from "@/components/CursorEffect";
+import ProjectDetailModal from "@/components/ProjectDetailModal";
 
 interface Project {
   id: string;
@@ -24,13 +25,17 @@ interface Project {
   live_url?: string;
   writeup?: string;
   is_featured: boolean;
-  date: string;
+  start_date: string;
+  end_date?: string;
+  image_urls?: string[];
 }
 
 const AllProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showProjectForm, setShowProjectForm] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | undefined>();
+  const [viewingProject, setViewingProject] = useState<Project | undefined>();
   const { isAdmin } = useAdminAuth();
 
   useEffect(() => {
@@ -42,7 +47,7 @@ const AllProjects = () => {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .order('date', { ascending: false });
+        .order('start_date', { ascending: false });
 
       if (error) throw error;
       setProjects(data || []);
@@ -52,6 +57,33 @@ const AllProjects = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEdit = (project: Project) => {
+    setEditingProject(project);
+    setShowProjectForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+
+    try {
+      const { error } = await supabase.functions.invoke('manage-projects', {
+        body: { action: 'delete', projectId: id }
+      });
+
+      if (error) throw error;
+      toast.success('Project deleted successfully');
+      fetchProjects();
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      toast.error('Failed to delete project');
+    }
+  };
+
+  const handleFormClose = () => {
+    setShowProjectForm(false);
+    setEditingProject(undefined);
   };
 
 
@@ -99,8 +131,15 @@ const AllProjects = () => {
 
         <ProjectFormModal 
           open={showProjectForm}
-          onOpenChange={setShowProjectForm}
+          onOpenChange={handleFormClose}
           onSuccess={fetchProjects}
+          editProject={editingProject}
+        />
+
+        <ProjectDetailModal
+          project={viewingProject}
+          open={!!viewingProject}
+          onOpenChange={(open) => !open && setViewingProject(undefined)}
         />
 
         {featuredProjects.length > 0 && (
@@ -164,7 +203,10 @@ const AllProjects = () => {
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <span className="text-sm text-primary font-semibold">{project.category}</span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" onClick={() => setViewingProject(project)}>
+                        <Eye size={18} />
+                      </Button>
                       {project.github_url && (
                         <Button size="icon" variant="ghost" asChild>
                           <a href={project.github_url} target="_blank" rel="noopener noreferrer">
@@ -178,6 +220,16 @@ const AllProjects = () => {
                             <ExternalLink size={18} />
                           </a>
                         </Button>
+                      )}
+                      {isAdmin && (
+                        <>
+                          <Button size="icon" variant="ghost" onClick={() => handleEdit(project)}>
+                            <Edit size={18} className="text-accent" />
+                          </Button>
+                          <Button size="icon" variant="ghost" onClick={() => handleDelete(project.id)}>
+                            <Trash2 size={18} className="text-destructive" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
