@@ -43,11 +43,11 @@ const ProjectDetailModal = ({ project, open, onOpenChange }: ProjectDetailModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 bg-card">
+      <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden p-0 bg-card z-[200] top-[55%]">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col md:flex-row h-full"
+          className="flex flex-col md:flex-row h-full max-h-[80vh]"
         >
           {/* Left Side - Text Content */}
           <div className="flex-1 p-8 overflow-y-auto">
@@ -60,7 +60,7 @@ const ProjectDetailModal = ({ project, open, onOpenChange }: ProjectDetailModalP
                   <span>{formatDateRange(project.start_date, project.end_date)}</span>
                 </div>
               </div>
-              <Button size="icon" variant="ghost" onClick={() => onOpenChange(false)}>
+              <Button size="icon" variant="ghost" onClick={() => onOpenChange(false)} className="shrink-0">
                 <X size={20} />
               </Button>
             </div>

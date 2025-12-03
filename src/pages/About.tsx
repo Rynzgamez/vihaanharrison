@@ -34,12 +34,12 @@ const About = () => {
       <CursorEffect />
       <Navigation />
       
-      {/* Animated background blobs */}
+      {/* Subtle background accents */}
       <motion.div 
-        className="absolute top-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-[120px] pointer-events-none"
+        className="absolute top-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-[40px] pointer-events-none"
         animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
+          scale: [1, 1.1, 1],
+          opacity: [0.2, 0.3, 0.2],
         }}
         transition={{
           duration: 8,
@@ -48,10 +48,10 @@ const About = () => {
         }}
       />
       <motion.div 
-        className="absolute bottom-40 left-20 w-80 h-80 bg-accent/15 rounded-full blur-[100px] pointer-events-none"
+        className="absolute bottom-40 left-20 w-80 h-80 bg-accent/8 rounded-full blur-[30px] pointer-events-none"
         animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.4, 0.2],
+          scale: [1, 1.2, 1],
+          opacity: [0.15, 0.25, 0.15],
         }}
         transition={{
           duration: 10,
@@ -61,7 +61,7 @@ const About = () => {
         }}
       />
       <motion.div 
-        className="absolute top-1/2 left-1/3 w-64 h-64 bg-accent/8 rounded-full blur-[90px] pointer-events-none"
+        className="absolute top-1/2 left-1/3 w-64 h-64 bg-accent/5 rounded-full blur-[25px] pointer-events-none"
         animate={{
           x: [0, 50, 0],
           y: [0, -30, 0],
@@ -128,12 +128,12 @@ const About = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 </div>
-                {/* Enhanced blur effects around image */}
+                {/* Subtle accent highlights */}
                 <motion.div 
-                  className="absolute -bottom-8 -right-8 w-40 h-40 bg-accent/30 rounded-full blur-[80px]"
+                  className="absolute -bottom-8 -right-8 w-40 h-40 bg-accent/15 rounded-full blur-[30px]"
                   animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
+                    scale: [1, 1.1, 1],
+                    opacity: [0.2, 0.3, 0.2],
                   }}
                   transition={{
                     duration: 4,
@@ -142,10 +142,10 @@ const About = () => {
                   }}
                 />
                 <motion.div 
-                  className="absolute -top-8 -left-8 w-32 h-32 bg-accent/20 rounded-full blur-[60px]"
+                  className="absolute -top-8 -left-8 w-32 h-32 bg-accent/10 rounded-full blur-[25px]"
                   animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.2, 0.4, 0.2],
+                    scale: [1, 1.2, 1],
+                    opacity: [0.15, 0.25, 0.15],
                   }}
                   transition={{
                     duration: 5,
@@ -156,7 +156,7 @@ const About = () => {
                 />
                 {/* Decorative icons */}
                 <motion.div
-                  className="absolute -top-4 -right-4 bg-accent/20 backdrop-blur-sm p-3 rounded-full border border-accent/30"
+                  className="absolute -top-4 -right-4 bg-accent/10 p-3 rounded-full border border-accent/20"
                   animate={{
                     y: [0, -10, 0],
                   }}
@@ -169,7 +169,7 @@ const About = () => {
                   <Camera className="w-5 h-5 text-accent" />
                 </motion.div>
                 <motion.div
-                  className="absolute bottom-4 -left-4 bg-accent/20 backdrop-blur-sm p-3 rounded-full border border-accent/30"
+                  className="absolute bottom-4 -left-4 bg-accent/10 p-3 rounded-full border border-accent/20"
                   animate={{
                     y: [0, 10, 0],
                   }}

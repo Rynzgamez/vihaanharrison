@@ -33,7 +33,7 @@ const Navigation = () => {
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-[100] transition-smooth ${
         scrolled
-          ? "bg-background/80 backdrop-blur-lg shadow-elegant"
+          ? "bg-background/90 backdrop-blur-sm"
           : "bg-transparent"
       }`}
     >
