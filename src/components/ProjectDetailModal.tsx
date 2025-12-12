@@ -43,7 +43,7 @@ const ProjectDetailModal = ({ project, open, onOpenChange }: ProjectDetailModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden p-0 bg-card z-[200] top-[55%]">
+      <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden p-0 bg-card z-[200] top-[55%] [&>button]:hidden">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -92,7 +92,7 @@ const ProjectDetailModal = ({ project, open, onOpenChange }: ProjectDetailModalP
             {/* Tags */}
             {project.tags && project.tags.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-foreground mb-3">Technologies</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
                     <span

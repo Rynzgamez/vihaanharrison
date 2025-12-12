@@ -41,6 +41,10 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        activity: {
+          DEFAULT: "hsl(var(--activity))",
+          foreground: "hsl(var(--activity-foreground))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
