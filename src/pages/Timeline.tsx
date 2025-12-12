@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { Calendar, Plus, Upload, X } from "lucide-react";
@@ -34,8 +34,20 @@ const Timeline = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPosition, setPhotoPosition] = useState("0");
   const [timelinePhotos, setTimelinePhotos] = useState<TimelinePhoto[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const { isAdmin } = useAdminAuth();
   const containerRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start center", "end center"]
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const index = Math.floor(latest * projects.length);
+    setActiveIndex(Math.min(index, projects.length - 1));
+  });
 
   useEffect(() => {
     fetchProjects();
@@ -160,7 +172,7 @@ const Timeline = () => {
         </div>
 
         <Dialog open={showPhotoDialog} onOpenChange={setShowPhotoDialog}>
-          <DialogContent className="bg-card">
+          <DialogContent className="bg-card z-[200]">
             <DialogHeader>
               <DialogTitle className="text-foreground">Add Timeline Photo</DialogTitle>
             </DialogHeader>
@@ -199,55 +211,121 @@ const Timeline = () => {
           </DialogContent>
         </Dialog>
 
-        <div className="relative" style={{ scrollSnapType: 'y mandatory' }}>
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-accent/20" />
+        {/* Scroll fade overlays */}
+        <div className="fixed top-0 left-0 right-0 h-40 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none z-40" />
+        <div className="fixed bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-40" />
+
+        <div className="relative" ref={timelineRef}>
+          {/* Curved Timeline Line */}
+          <svg 
+            className="absolute left-8 top-0 bottom-0 w-4 h-full pointer-events-none"
+            style={{ overflow: 'visible' }}
+          >
+            <motion.path
+              d={`M 8 0 ${projects.map((_, i) => {
+                const y = i * 280 + 100;
+                const curve = i % 2 === 0 ? 20 : -20;
+                return `Q ${8 + curve} ${y - 70} 8 ${y}`;
+              }).join(' ')} L 8 ${projects.length * 280}`}
+              stroke="hsl(var(--accent))"
+              strokeWidth="2"
+              fill="none"
+              strokeOpacity="0.3"
+              strokeLinecap="round"
+            />
+            <motion.path
+              d={`M 8 0 ${projects.map((_, i) => {
+                const y = i * 280 + 100;
+                const curve = i % 2 === 0 ? 20 : -20;
+                return `Q ${8 + curve} ${y - 70} 8 ${y}`;
+              }).join(' ')} L 8 ${projects.length * 280}`}
+              stroke="hsl(var(--accent))"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+              style={{
+                pathLength: scrollYProgress
+              }}
+            />
+          </svg>
 
           {projects.map((project, index) => {
             const relevantPhotos = timelinePhotos.filter(
               p => p.position >= index && p.position < index + 1
             );
+            const isActive = activeIndex === index;
 
             return (
-              <div key={project.id} style={{ scrollSnapAlign: 'start' }}>
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.6 }}
-                  className="relative pl-20 pb-12 group"
-                >
-                  <div className="absolute left-6 top-2 w-5 h-5 rounded-full bg-accent shadow-glow group-hover:scale-125 transition-smooth" />
+              <motion.div 
+                key={project.id} 
+                className="relative mb-16"
+                initial={{ opacity: 0.4, scale: 0.95 }}
+                animate={{ 
+                  opacity: isActive ? 1 : 0.5, 
+                  scale: isActive ? 1 : 0.95,
+                }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="flex gap-8 items-stretch">
+                  {/* Left: Content */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.6 }}
+                    className="flex-1 pl-16"
+                  >
+                    {/* Timeline dot */}
+                    <motion.div 
+                      className={`absolute left-6 top-6 w-5 h-5 rounded-full transition-all duration-300 ${
+                        isActive ? 'bg-accent shadow-glow scale-125' : 'bg-accent/50'
+                      }`}
+                    />
 
-                  <div className="bg-card rounded-xl p-6 shadow-elegant hover:shadow-glow transition-smooth">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Calendar size={16} className="text-accent" />
-                      <span className="text-sm text-muted-foreground">
-                        {formatDateRange(project.start_date, project.end_date)}
+                    <div className={`bg-card rounded-xl p-6 shadow-elegant transition-all duration-300 ${
+                      isActive ? 'shadow-glow ring-1 ring-accent/30' : ''
+                    }`}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <Calendar size={16} className="text-accent" />
+                        <span className="text-sm text-muted-foreground">
+                          {formatDateRange(project.start_date, project.end_date)}
+                        </span>
+                      </div>
+                      <span className="text-xs text-accent font-semibold uppercase tracking-wide">
+                        {project.category}
                       </span>
+                      <h3 className="text-xl font-bold mt-2 mb-2 text-foreground">{project.title}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        {project.description}
+                      </p>
                     </div>
-                    <span className="text-xs text-accent font-semibold uppercase tracking-wide">
-                      {project.category}
-                    </span>
-                    <h3 className="text-xl font-bold mt-2 mb-2 text-foreground">{project.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {project.description}
-                    </p>
+                  </motion.div>
 
-                    {project.image_urls && project.image_urls.length > 0 && (
-                      <div className="mt-4 grid grid-cols-2 gap-3">
-                        {project.image_urls.slice(0, 2).map((url, idx) => (
-                          <motion.img
-                            key={idx}
-                            src={url}
-                            alt={`${project.title} preview ${idx + 1}`}
-                            className="rounded-lg shadow-md object-cover h-32 w-full"
-                            whileHover={{ scale: 1.05 }}
-                          />
-                        ))}
+                  {/* Right: Project Image */}
+                  <div className="w-72 shrink-0">
+                    {project.image_urls && project.image_urls.length > 0 ? (
+                      <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className={`rounded-xl overflow-hidden shadow-elegant h-full transition-all duration-300 ${
+                          isActive ? 'shadow-glow' : ''
+                        }`}
+                      >
+                        <img
+                          src={project.image_urls[0]}
+                          alt={`${project.title} preview`}
+                          className="w-full h-full object-cover"
+                        />
+                      </motion.div>
+                    ) : (
+                      <div className="w-full h-full bg-muted/20 rounded-xl flex items-center justify-center min-h-[200px]">
+                        <span className="text-muted-foreground text-sm">No image</span>
                       </div>
                     )}
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Floating Timeline Photos */}
                 {relevantPhotos.map((photo) => (
@@ -257,7 +335,7 @@ const Timeline = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: false, amount: 0.5 }}
                     transition={{ duration: 0.8, type: "spring" }}
-                    className="relative mb-8 flex justify-end pr-8"
+                    className="relative mt-8 flex justify-end pr-8"
                   >
                     <div className="relative max-w-md">
                       <img
@@ -278,7 +356,7 @@ const Timeline = () => {
                     </div>
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
             );
           })}
         </div>

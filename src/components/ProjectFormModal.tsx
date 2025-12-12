@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,21 +19,59 @@ interface ProjectFormModalProps {
 
 const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, editProject }: ProjectFormModalProps) => {
   const [formData, setFormData] = useState({
-    title: editProject?.title || "",
-    category: editProject?.category || defaultCategory || "",
-    description: editProject?.description || "",
-    tags: editProject?.tags?.join(", ") || "",
-    impact: editProject?.impact || "",
-    github_url: editProject?.github_url || "",
-    live_url: editProject?.live_url || "",
-    writeup: editProject?.writeup || "",
-    start_date: editProject?.start_date || new Date().toISOString().split('T')[0],
-    end_date: editProject?.end_date || "",
-    is_featured: editProject?.is_featured || false,
+    title: "",
+    category: defaultCategory || "",
+    description: "",
+    tags: "",
+    impact: "",
+    github_url: "",
+    live_url: "",
+    writeup: "",
+    start_date: new Date().toISOString().split('T')[0],
+    end_date: "",
+    is_featured: false,
   });
   const [files, setFiles] = useState<File[]>([]);
-  const [uploadedUrls, setUploadedUrls] = useState<string[]>(editProject?.image_urls || []);
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Reset form when editProject changes or modal opens
+  useEffect(() => {
+    if (open) {
+      if (editProject) {
+        setFormData({
+          title: editProject.title || "",
+          category: editProject.category || defaultCategory || "",
+          description: editProject.description || "",
+          tags: editProject.tags?.join(", ") || "",
+          impact: editProject.impact || "",
+          github_url: editProject.github_url || "",
+          live_url: editProject.live_url || "",
+          writeup: editProject.writeup || "",
+          start_date: editProject.start_date || new Date().toISOString().split('T')[0],
+          end_date: editProject.end_date || "",
+          is_featured: editProject.is_featured || false,
+        });
+        setUploadedUrls(editProject.image_urls || []);
+      } else {
+        setFormData({
+          title: "",
+          category: defaultCategory || "",
+          description: "",
+          tags: "",
+          impact: "",
+          github_url: "",
+          live_url: "",
+          writeup: "",
+          start_date: new Date().toISOString().split('T')[0],
+          end_date: "",
+          is_featured: false,
+        });
+        setUploadedUrls([]);
+      }
+      setFiles([]);
+    }
+  }, [open, editProject, defaultCategory]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -129,21 +167,6 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
       toast.success(editProject ? 'Project updated successfully' : 'Project created successfully');
       onSuccess();
       onOpenChange(false);
-      setFormData({
-        title: "",
-        category: "",
-        description: "",
-        tags: "",
-        impact: "",
-        github_url: "",
-        live_url: "",
-        writeup: "",
-        start_date: new Date().toISOString().split('T')[0],
-        end_date: "",
-        is_featured: false,
-      });
-      setFiles([]);
-      setUploadedUrls([]);
     } catch (error) {
       console.error('Error saving project:', error);
       toast.error('Failed to save project');
@@ -154,7 +177,7 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-card z-[200] top-[55%]">
         <DialogHeader>
           <DialogTitle className="text-foreground">
             {editProject ? 'Edit Project' : 'Add New Project'}
@@ -282,13 +305,13 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
             />
           </div>
 
-          <div>
-            <Label htmlFor="is_featured" className="text-foreground">Mark as Featured</Label>
+          <div className="flex items-center gap-2">
             <Checkbox
               id="is_featured"
               checked={formData.is_featured}
               onCheckedChange={(checked) => setFormData({ ...formData, is_featured: !!checked })}
             />
+            <Label htmlFor="is_featured" className="text-foreground">Mark as Featured</Label>
           </div>
 
           {/* File Upload Section */}
