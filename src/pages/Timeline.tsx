@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { Calendar, Plus, Upload, X } from "lucide-react";
@@ -35,16 +35,23 @@ const Timeline = () => {
   const [photoPosition, setPhotoPosition] = useState("0");
   const [timelinePhotos, setTimelinePhotos] = useState<TimelinePhoto[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
   const { isAdmin } = useAdminAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
 
+  // Only enable scroll tracking after mount
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const { scrollYProgress } = useScroll({
-    target: timelineRef,
+    target: isMounted ? timelineRef : undefined,
     offset: ["start center", "end center"]
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (!isMounted) return;
     const index = Math.floor(latest * projects.length);
     setActiveIndex(Math.min(index, projects.length - 1));
   });
