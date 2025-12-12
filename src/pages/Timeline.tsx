@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
-import { Calendar, Plus, Upload, X } from "lucide-react";
+import { Calendar, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import CursorEffect from "@/components/CursorEffect";
 import { Button } from "@/components/ui/button";
@@ -35,56 +35,46 @@ const Timeline = () => {
   const [photoPosition, setPhotoPosition] = useState("0");
   const [timelinePhotos, setTimelinePhotos] = useState<TimelinePhoto[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isMounted, setIsMounted] = useState(false);
   const { isAdmin } = useAdminAuth();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<HTMLDivElement>(null);
 
-  // Only enable scroll tracking after mount
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: isMounted ? timelineRef : undefined,
-    offset: ["start center", "end center"]
-  });
+  // Use viewport scroll progress instead of element ref to avoid hydration issues
+  const { scrollYProgress } = useScroll();
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (!isMounted) return;
     const index = Math.floor(latest * projects.length);
-    setActiveIndex(Math.min(index, projects.length - 1));
+    setActiveIndex(Math.min(index, Math.max(projects.length - 1, 0)));
   });
 
   useEffect(() => {
     fetchProjects();
     loadTimelinePhotos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadTimelinePhotos = () => {
-    const saved = localStorage.getItem('timeline-photos');
+    const saved = localStorage.getItem("timeline-photos");
     if (saved) {
       setTimelinePhotos(JSON.parse(saved));
     }
   };
 
   const saveTimelinePhotos = (photos: TimelinePhoto[]) => {
-    localStorage.setItem('timeline-photos', JSON.stringify(photos));
+    localStorage.setItem("timeline-photos", JSON.stringify(photos));
     setTimelinePhotos(photos);
   };
 
   const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
-        .from('projects')
-        .select('id, title, category, description, start_date, end_date, image_urls')
-        .order('start_date', { ascending: false });
+        .from("projects")
+        .select("id, title, category, description, start_date, end_date, image_urls")
+        .order("start_date", { ascending: false });
 
       if (error) throw error;
       setProjects(data || []);
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      toast.error('Failed to load timeline');
+      console.error("Error fetching projects:", error);
+      toast.error("Failed to load timeline");
     } finally {
       setLoading(false);
     }
@@ -94,57 +84,55 @@ const Timeline = () => {
     if (!photoFile) return;
 
     try {
-      const fileExt = photoFile.name.split('.').pop();
+      const fileExt = photoFile.name.split(".").pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `timeline/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('project-images')
+        .from("project-images")
         .upload(filePath, photoFile);
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage
-        .from('project-images')
-        .getPublicUrl(filePath);
+      const { data } = supabase.storage.from("project-images").getPublicUrl(filePath);
 
       const newPhoto: TimelinePhoto = {
         id: Math.random().toString(),
         url: data.publicUrl,
-        position: parseFloat(photoPosition)
+        position: parseFloat(photoPosition),
       };
 
       saveTimelinePhotos([...timelinePhotos, newPhoto]);
-      toast.success('Photo added to timeline');
+      toast.success("Photo added to timeline");
       setShowPhotoDialog(false);
       setPhotoFile(null);
       setPhotoPosition("0");
     } catch (error) {
-      console.error('Error uploading photo:', error);
-      toast.error('Failed to upload photo');
+      console.error("Error uploading photo:", error);
+      toast.error("Failed to upload photo");
     }
   };
 
   const removePhoto = (id: string) => {
-    saveTimelinePhotos(timelinePhotos.filter(p => p.id !== id));
+    saveTimelinePhotos(timelinePhotos.filter((p) => p.id !== id));
   };
 
   const formatDateRange = (start: string, end?: string) => {
     const startDate = new Date(start);
-    const startStr = startDate.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long'
+    const startStr = startDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
     });
-    
+
     if (end) {
       const endDate = new Date(end);
-      const endStr = endDate.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long'
+      const endStr = endDate.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
       });
       return `${startStr} - ${endStr}`;
     }
-    
+
     return startStr;
   };
 
@@ -157,7 +145,7 @@ const Timeline = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background" ref={containerRef}>
+    <div className="min-h-screen bg-background">
       <CursorEffect />
       <Navigation />
       <div className="container mx-auto px-6 py-24 mt-20">
@@ -169,7 +157,7 @@ const Timeline = () => {
           >
             Project <span className="text-accent">Timeline</span>
           </motion.h1>
-          
+
           {isAdmin && (
             <Button onClick={() => setShowPhotoDialog(true)} variant="outline">
               <Upload className="mr-2 h-4 w-4" />
@@ -185,7 +173,9 @@ const Timeline = () => {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="photo" className="text-foreground">Photo</Label>
+                <Label htmlFor="photo" className="text-foreground">
+                  Photo
+                </Label>
                 <Input
                   id="photo"
                   type="file"
@@ -222,18 +212,20 @@ const Timeline = () => {
         <div className="fixed top-0 left-0 right-0 h-40 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none z-40" />
         <div className="fixed bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-40" />
 
-        <div className="relative" ref={timelineRef}>
+        <div className="relative">
           {/* Curved Timeline Line */}
-          <svg 
+          <svg
             className="absolute left-8 top-0 bottom-0 w-4 h-full pointer-events-none"
-            style={{ overflow: 'visible' }}
+            style={{ overflow: "visible" }}
           >
             <motion.path
-              d={`M 8 0 ${projects.map((_, i) => {
-                const y = i * 280 + 100;
-                const curve = i % 2 === 0 ? 20 : -20;
-                return `Q ${8 + curve} ${y - 70} 8 ${y}`;
-              }).join(' ')} L 8 ${projects.length * 280}`}
+              d={`M 8 0 ${projects
+                .map((_, i) => {
+                  const y = i * 280 + 100;
+                  const curve = i % 2 === 0 ? 20 : -20;
+                  return `Q ${8 + curve} ${y - 70} 8 ${y}`;
+                })
+                .join(" ")} L 8 ${projects.length * 280}`}
               stroke="hsl(var(--accent))"
               strokeWidth="2"
               fill="none"
@@ -241,34 +233,36 @@ const Timeline = () => {
               strokeLinecap="round"
             />
             <motion.path
-              d={`M 8 0 ${projects.map((_, i) => {
-                const y = i * 280 + 100;
-                const curve = i % 2 === 0 ? 20 : -20;
-                return `Q ${8 + curve} ${y - 70} 8 ${y}`;
-              }).join(' ')} L 8 ${projects.length * 280}`}
+              d={`M 8 0 ${projects
+                .map((_, i) => {
+                  const y = i * 280 + 100;
+                  const curve = i % 2 === 0 ? 20 : -20;
+                  return `Q ${8 + curve} ${y - 70} 8 ${y}`;
+                })
+                .join(" ")} L 8 ${projects.length * 280}`}
               stroke="hsl(var(--accent))"
               strokeWidth="2"
               fill="none"
               strokeLinecap="round"
               style={{
-                pathLength: scrollYProgress
+                pathLength: scrollYProgress,
               }}
             />
           </svg>
 
           {projects.map((project, index) => {
             const relevantPhotos = timelinePhotos.filter(
-              p => p.position >= index && p.position < index + 1
+              (p) => p.position >= index && p.position < index + 1
             );
             const isActive = activeIndex === index;
 
             return (
-              <motion.div 
-                key={project.id} 
+              <motion.div
+                key={project.id}
                 className="relative mb-16"
                 initial={{ opacity: 0.4, scale: 0.95 }}
-                animate={{ 
-                  opacity: isActive ? 1 : 0.5, 
+                animate={{
+                  opacity: isActive ? 1 : 0.5,
                   scale: isActive ? 1 : 0.95,
                 }}
                 transition={{ duration: 0.4 }}
@@ -283,15 +277,17 @@ const Timeline = () => {
                     className="flex-1 pl-16"
                   >
                     {/* Timeline dot */}
-                    <motion.div 
+                    <motion.div
                       className={`absolute left-6 top-6 w-5 h-5 rounded-full transition-all duration-300 ${
-                        isActive ? 'bg-accent shadow-glow scale-125' : 'bg-accent/50'
+                        isActive ? "bg-accent shadow-glow scale-125" : "bg-accent/50"
                       }`}
                     />
 
-                    <div className={`bg-card rounded-xl p-6 shadow-elegant transition-all duration-300 ${
-                      isActive ? 'shadow-glow ring-1 ring-accent/30' : ''
-                    }`}>
+                    <div
+                      className={`bg-card rounded-xl p-6 shadow-elegant transition-all duration-300 ${
+                        isActive ? "shadow-glow ring-1 ring-accent/30" : ""
+                      }`}
+                    >
                       <div className="flex items-center gap-3 mb-3">
                         <Calendar size={16} className="text-accent" />
                         <span className="text-sm text-muted-foreground">
@@ -301,7 +297,9 @@ const Timeline = () => {
                       <span className="text-xs text-accent font-semibold uppercase tracking-wide">
                         {project.category}
                       </span>
-                      <h3 className="text-xl font-bold mt-2 mb-2 text-foreground">{project.title}</h3>
+                      <h3 className="text-xl font-bold mt-2 mb-2 text-foreground">
+                        {project.title}
+                      </h3>
                       <p className="text-muted-foreground text-sm leading-relaxed">
                         {project.description}
                       </p>
@@ -317,7 +315,7 @@ const Timeline = () => {
                         viewport={{ once: true, amount: 0.3 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className={`rounded-xl overflow-hidden shadow-elegant h-full transition-all duration-300 ${
-                          isActive ? 'shadow-glow' : ''
+                          isActive ? "shadow-glow" : ""
                         }`}
                       >
                         <img
