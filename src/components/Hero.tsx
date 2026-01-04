@@ -39,29 +39,26 @@ const Hero = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.position.z = 5;
 
-    // Create floating particles - more prominent and spread apart
     const particlesGeometry = new THREE.BufferGeometry();
     const particlesCount = 800;
     const posArray = new Float32Array(particlesCount * 3);
 
     for (let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 20; // Increased spread
+      posArray[i] = (Math.random() - 0.5) * 20;
     }
 
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.015, // Increased size for more prominence
-      color: 0x00ffff,
+      size: 0.015,
+      color: 0x00deee,
       transparent: true,
-      opacity: 1, // Increased opacity
+      opacity: 1,
       blending: THREE.AdditiveBlending
     });
 
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
-
-    // Torus removed as per user request
 
     let mouseXVal = 0;
     let mouseYVal = 0;
@@ -84,11 +81,9 @@ const Hero = () => {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Smooth camera movement based on mouse
       camera.position.x += (mouseXVal * 0.5 - camera.position.x) * 0.05;
       camera.position.y += (mouseYVal * 0.5 - camera.position.y) * 0.05;
 
-      // Rotate particles
       particlesMesh.rotation.y += 0.0005;
       particlesMesh.rotation.x += 0.0003;
 
@@ -106,7 +101,6 @@ const Hero = () => {
     };
   }, []);
 
-  // Transform mouse position for black overlay gradient
   const blackOverlay = useTransform(
     [mouseX, mouseY],
     ([x, y]) => `radial-gradient(circle 650px at ${x}px ${y}px, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.80) 100%)`
@@ -114,14 +108,12 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-      {/* Three.js Canvas */}
       <canvas 
         ref={canvasRef} 
         className="absolute inset-0 z-0 pointer-events-none"
         style={{ opacity: 0.4 }}
       />
 
-      {/* Dynamic gradient blur with cursor-based masking */}
       <motion.div 
         className="absolute w-[1000px] h-[1000px] rounded-full blur-[200px] pointer-events-none"
         style={{
@@ -142,7 +134,6 @@ const Hero = () => {
         }}
       />
 
-      {/* Black overlay with cursor-based reveal */}
       <motion.div 
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
@@ -150,7 +141,6 @@ const Hero = () => {
         }}
       />
       
-      {/* Background Image with Dynamic Opacity */}
       <motion.div 
         className="absolute inset-0 z-0"
         style={{
@@ -172,7 +162,6 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center max-w-4xl mx-auto"
         >
-          {/* Logo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -197,17 +186,17 @@ const Hero = () => {
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.8 }}
           >
-            I Design, Code, and Create Change
+            AI Developer & Design-Minded Technologist
           </motion.h2>
 
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground mb-8"
+            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
             initial={{ opacity: 0, filter: "blur(10px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.8 }}
           >
-            Student • AI & Machine Learning Developer • Photographer • Environmental
-            Advocate
+            Building intelligent systems at the intersection of AI, product design, 
+            and human-centered technology.
           </motion.p>
 
           <motion.div
@@ -219,9 +208,7 @@ const Hero = () => {
             <Button
               size="lg"
               className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow text-lg"
-              onClick={() =>
-                document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
-              }
+              onClick={() => navigate("/work")}
             >
               View My Work
             </Button>
@@ -231,7 +218,7 @@ const Hero = () => {
               className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-lg"
               onClick={() => navigate("/about")}
             >
-              More About Me
+              About Me
             </Button>
           </motion.div>
         </motion.div>

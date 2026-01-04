@@ -20,9 +20,9 @@ const Navigation = () => {
   }, []);
 
   const navItems = [
+    { label: "Work", href: "/work" },
     { label: "About", href: "/about" },
-    { label: "Projects", href: "/projects" },
-    { label: "My Work", href: "/my-work" },
+    { label: "Foundations", href: "/foundations" },
     { label: "Timeline", href: "/timeline" },
     { label: "Contact", href: "/contact" },
   ];
