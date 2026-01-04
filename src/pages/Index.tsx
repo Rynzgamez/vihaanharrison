@@ -1,8 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Projects from "@/components/Projects";
-import Achievements from "@/components/Achievements";
+import FeaturedWork from "@/components/FeaturedWork";
 import Contact from "@/components/Contact";
 import CursorEffect from "@/components/CursorEffect";
 
@@ -12,9 +10,7 @@ const Index = () => {
       <CursorEffect />
       <Navigation />
       <Hero />
-      <About />
-      <Projects />
-      <Achievements />
+      <FeaturedWork />
       <Contact />
     </div>
   );
