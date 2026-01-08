@@ -30,25 +30,29 @@ Your task is to extract project/work entries from the provided text and format t
   "projects": [
     {
       "title": "Project name (concise, professional)",
-      "category": "One of: Technology, Coding & Innovation | AI Systems | Design & Product | Technical Projects | Academic & Scholarly Achievements | Leadership, Volunteering & Environmental Action | Model United Nations (MUN) & Public Speaking | Arts, Athletics & Personal Passions | Recognition & Awards",
-      "description": "2-3 sentence professional summary focusing on outcomes and capabilities demonstrated",
-      "writeup": "Detailed description including context, approach, and impact (3-5 sentences)",
-      "tags": ["relevant", "technical", "tags"],
-      "impact": "Quantified impact if available (e.g., '23% reduction', '500+ users')",
-      "start_date": "YYYY-MM-DD format",
-      "end_date": "YYYY-MM-DD format or null if ongoing"
+      "category": "MUST be exactly one of: Academic & Scholarly Achievements | Technology, Coding & Innovation | Leadership, Volunteering & Environmental Action | Model United Nations (MUN) & Public Speaking | Arts, Athletics & Personal Passions | Recognition & Awards",
+      "description": "2-3 sentence professional summary focusing on outcomes and capabilities demonstrated. This is the SHORT description shown on cards.",
+      "writeup": "Detailed description including context, approach, methodology, and impact. This is the FULL writeup with 4-8 sentences providing comprehensive information.",
+      "tags": ["relevant", "technical", "tags", "skills"],
+      "impact": "Quantified impact statement if available (e.g., '23% reduction', '500+ users', 'Top 10 nationally')",
+      "start_date": "YYYY-MM-DD format (use 01 for day if unknown)",
+      "end_date": "YYYY-MM-DD format or null if ongoing/one-time"
     }
   ]
 }
 
-IMPORTANT GUIDELINES:
-1. Frame all content professionally - focus on skills demonstrated, not student identity
-2. Translate achievements into professional signals (e.g., "Olympiad winner" → "Competitive problem-solving, analytical rigor")
-3. Use precise, confident language without exaggeration
-4. Extract dates as accurately as possible; use the 1st of the month if only month/year given
-5. Tags should be specific technologies, skills, or domains (e.g., "Python", "Machine Learning", "Product Design")
-6. If multiple projects are described, extract each as a separate entry
-7. Omit any project that lacks sufficient detail to create a meaningful entry
+CRITICAL GUIDELINES:
+1. Category MUST be exactly one of the 6 options listed above - no variations
+2. "description" should be SHORT (2-3 sentences) - this appears on project cards
+3. "writeup" should be DETAILED (4-8 sentences) - this is the full case study text
+4. Frame all content professionally - focus on skills demonstrated, not student identity
+5. Translate achievements into professional signals (e.g., "Olympiad winner" → "Competitive problem-solving, analytical rigor")
+6. Use precise, confident language without exaggeration
+7. Extract dates as accurately as possible; use the 1st of the month if only month/year given
+8. Tags should be specific technologies, skills, or domains (e.g., "Python", "Machine Learning", "Product Design")
+9. Impact should be a concise metric or achievement statement
+10. If multiple projects are described, extract each as a separate entry
+11. Omit any project that lacks sufficient detail to create a meaningful entry
 
 Return ONLY valid JSON, no additional text.`;
 
