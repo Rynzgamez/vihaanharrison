@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CursorEffect from "@/components/CursorEffect";
-import { BookOpen, Users, Code, Palette, Trophy, Eye, Edit, Trash2 } from "lucide-react";
+import { BookOpen, Users, Code, Palette, Trophy, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
@@ -26,37 +26,53 @@ interface Project {
   image_urls?: string[];
 }
 
+// All available categories with their colors
+const allCategories = [
+  "Academic & Scholarly Achievements",
+  "Technology, Coding & Innovation",
+  "Leadership, Volunteering & Environmental Action",
+  "Model United Nations (MUN) & Public Speaking",
+  "Arts, Athletics & Personal Passions",
+  "Recognition & Awards",
+];
+
 // Category color mapping
-const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
+const categoryColors: Record<string, { bg: string; text: string; border: string; solid: string }> = {
   "Academic & Scholarly Achievements": { 
     bg: "bg-blue-500/10", 
     text: "text-blue-400", 
-    border: "border-blue-500/30" 
+    border: "border-blue-500/30",
+    solid: "bg-blue-500"
   },
   "Technology, Coding & Innovation": { 
     bg: "bg-emerald-500/10", 
     text: "text-emerald-400", 
-    border: "border-emerald-500/30" 
+    border: "border-emerald-500/30",
+    solid: "bg-emerald-500"
   },
   "Leadership, Volunteering & Environmental Action": { 
     bg: "bg-amber-500/10", 
     text: "text-amber-400", 
-    border: "border-amber-500/30" 
+    border: "border-amber-500/30",
+    solid: "bg-amber-500"
   },
   "Model United Nations (MUN) & Public Speaking": { 
     bg: "bg-purple-500/10", 
     text: "text-purple-400", 
-    border: "border-purple-500/30" 
+    border: "border-purple-500/30",
+    solid: "bg-purple-500"
   },
   "Arts, Athletics & Personal Passions": { 
     bg: "bg-rose-500/10", 
     text: "text-rose-400", 
-    border: "border-rose-500/30" 
+    border: "border-rose-500/30",
+    solid: "bg-rose-500"
   },
   "Recognition & Awards": { 
     bg: "bg-yellow-500/10", 
     text: "text-yellow-400", 
-    border: "border-yellow-500/30" 
+    border: "border-yellow-500/30",
+    solid: "bg-yellow-500"
   },
 };
 
@@ -67,6 +83,16 @@ const categoryIcons: Record<string, React.ElementType> = {
   "Model United Nations (MUN) & Public Speaking": Users,
   "Arts, Athletics & Personal Passions": Palette,
   "Recognition & Awards": Trophy,
+};
+
+// Short labels for category buttons
+const categoryShortLabels: Record<string, string> = {
+  "Academic & Scholarly Achievements": "Academic",
+  "Technology, Coding & Innovation": "Technology",
+  "Leadership, Volunteering & Environmental Action": "Leadership",
+  "Model United Nations (MUN) & Public Speaking": "MUN",
+  "Arts, Athletics & Personal Passions": "Arts & Athletics",
+  "Recognition & Awards": "Recognition",
 };
 
 const Foundations = () => {
@@ -115,19 +141,22 @@ const Foundations = () => {
     }
   };
 
-  // Get unique categories from projects
-  const categories = [...new Set(projects.map(p => p.category))];
-  
   // Filter projects by selected category
   const filteredProjects = selectedCategory 
     ? projects.filter(p => p.category === selectedCategory)
     : projects;
 
+  // Get count of projects per category
+  const getCategoryCount = (category: string) => {
+    return projects.filter(p => p.category === category).length;
+  };
+
   const getCategoryStyle = (category: string) => {
     return categoryColors[category] || { 
       bg: "bg-muted", 
       text: "text-muted-foreground", 
-      border: "border-border" 
+      border: "border-border",
+      solid: "bg-muted"
     };
   };
 
@@ -179,9 +208,12 @@ const Foundations = () => {
           >
             All Categories
           </Button>
-          {categories.map((category) => {
+          {allCategories.map((category) => {
             const style = getCategoryStyle(category);
             const Icon = getCategoryIcon(category);
+            const count = getCategoryCount(category);
+            const shortLabel = categoryShortLabels[category] || category.split(' ')[0];
+            
             return (
               <Button
                 key={category}
@@ -190,7 +222,8 @@ const Foundations = () => {
                 className={`${selectedCategory === category ? style.bg + " " + style.border : ""} ${style.text} border ${style.border} hover:${style.bg}`}
               >
                 <Icon className="mr-2 h-4 w-4" />
-                {category.split(' ')[0]}
+                {shortLabel}
+                <span className="ml-2 text-xs opacity-60">({count})</span>
               </Button>
             );
           })}
@@ -203,7 +236,9 @@ const Foundations = () => {
             animate={{ opacity: 1 }}
             className="text-center py-24"
           >
-            <p className="text-muted-foreground text-lg">No foundation items found.</p>
+            <p className="text-muted-foreground text-lg">
+              {selectedCategory ? `No items in "${categoryShortLabels[selectedCategory] || selectedCategory}" yet.` : "No foundation items found."}
+            </p>
           </motion.div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
@@ -220,12 +255,12 @@ const Foundations = () => {
                   whileHover={{ y: -8 }}
                   className={`bg-card rounded-xl overflow-hidden shadow-elegant hover:shadow-glow transition-smooth group border ${style.border}`}
                 >
-                  <div className={`h-2 ${style.bg.replace('/10', '')}`} />
+                  <div className={`h-2 ${style.solid}`} />
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
                       <div className={`flex items-center gap-2 ${style.text}`}>
                         <Icon size={16} />
-                        <span className="text-sm font-semibold">{project.category}</span>
+                        <span className="text-sm font-semibold">{categoryShortLabels[project.category] || project.category}</span>
                       </div>
                       <div className="flex gap-1">
                         <Button size="icon" variant="ghost" onClick={() => setViewingProject(project)}>
