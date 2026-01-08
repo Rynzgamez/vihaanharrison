@@ -94,6 +94,7 @@ export type Database = {
           image_urls: string[] | null
           impact: string | null
           is_featured: boolean | null
+          is_work: boolean | null
           live_url: string | null
           start_date: string
           tags: string[] | null
@@ -112,6 +113,7 @@ export type Database = {
           image_urls?: string[] | null
           impact?: string | null
           is_featured?: boolean | null
+          is_work?: boolean | null
           live_url?: string | null
           start_date?: string
           tags?: string[] | null
@@ -130,6 +132,7 @@ export type Database = {
           image_urls?: string[] | null
           impact?: string | null
           is_featured?: boolean | null
+          is_work?: boolean | null
           live_url?: string | null
           start_date?: string
           tags?: string[] | null

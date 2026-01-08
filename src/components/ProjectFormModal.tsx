@@ -15,9 +15,10 @@ interface ProjectFormModalProps {
   onSuccess: () => void;
   defaultCategory?: string;
   editProject?: any;
+  isWorkPage?: boolean;
 }
 
-const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, editProject }: ProjectFormModalProps) => {
+const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, editProject, isWorkPage = false }: ProjectFormModalProps) => {
   const [formData, setFormData] = useState({
     title: "",
     category: defaultCategory || "",
@@ -30,6 +31,7 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
     start_date: new Date().toISOString().split('T')[0],
     end_date: "",
     is_featured: false,
+    is_work: isWorkPage,
   });
   const [files, setFiles] = useState<File[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
@@ -51,6 +53,7 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
           start_date: editProject.start_date || new Date().toISOString().split('T')[0],
           end_date: editProject.end_date || "",
           is_featured: editProject.is_featured || false,
+          is_work: editProject.is_work || isWorkPage,
         });
         setUploadedUrls(editProject.image_urls || []);
       } else {
@@ -66,12 +69,13 @@ const ProjectFormModal = ({ open, onOpenChange, onSuccess, defaultCategory, edit
           start_date: new Date().toISOString().split('T')[0],
           end_date: "",
           is_featured: false,
+          is_work: isWorkPage,
         });
         setUploadedUrls([]);
       }
       setFiles([]);
     }
-  }, [open, editProject, defaultCategory]);
+  }, [open, editProject, defaultCategory, isWorkPage]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);

@@ -3,123 +3,136 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CursorEffect from "@/components/CursorEffect";
-import { BookOpen, Users, Code, Palette, Trophy, ChevronDown } from "lucide-react";
+import { BookOpen, Users, Code, Palette, Trophy, Eye, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2 } from "lucide-react";
-import ActivityFormModal from "@/components/ActivityFormModal";
+import ProjectDetailModal from "@/components/ProjectDetailModal";
 
-interface Activity {
+interface Project {
   id: string;
   title: string;
   category: string;
   description: string;
+  tags: string[];
+  impact: string;
+  github_url?: string;
+  live_url?: string;
+  writeup?: string;
+  is_featured: boolean;
   start_date: string;
   end_date?: string;
+  image_urls?: string[];
 }
 
-const foundationSections = [
-  {
-    id: "academic",
-    title: "Academic Foundations",
-    icon: BookOpen,
-    description: "Rigorous coursework, competitions, and consistent performance over time that built analytical thinking and intellectual discipline.",
-    categories: ["Academic & Scholarly Achievements"]
+// Category color mapping
+const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
+  "Academic & Scholarly Achievements": { 
+    bg: "bg-blue-500/10", 
+    text: "text-blue-400", 
+    border: "border-blue-500/30" 
   },
-  {
-    id: "leadership",
-    title: "Early Leadership & Communication",
-    icon: Users,
-    description: "MUN participation, student leadership roles, and initiative ownership that developed negotiation, public speaking, and systems-level thinking.",
-    categories: ["Model United Nations (MUN) & Public Speaking", "Leadership, Volunteering & Environmental Action"]
+  "Technology, Coding & Innovation": { 
+    bg: "bg-emerald-500/10", 
+    text: "text-emerald-400", 
+    border: "border-emerald-500/30" 
   },
-  {
-    id: "technical",
-    title: "Early Technical Exposure",
-    icon: Code,
-    description: "First encounters with AI systems, coding competitions, robotics, and experimentation that sparked a trajectory in technology.",
-    categories: ["Technology, Coding & Innovation"]
+  "Leadership, Volunteering & Environmental Action": { 
+    bg: "bg-amber-500/10", 
+    text: "text-amber-400", 
+    border: "border-amber-500/30" 
   },
-  {
-    id: "creative",
-    title: "Creative & Athletic Discipline",
-    icon: Palette,
-    description: "Arts, sports, and photography—framed as discipline, resilience, and performance under pressure.",
-    categories: ["Arts, Athletics & Personal Passions"]
+  "Model United Nations (MUN) & Public Speaking": { 
+    bg: "bg-purple-500/10", 
+    text: "text-purple-400", 
+    border: "border-purple-500/30" 
   },
-  {
-    id: "recognition",
-    title: "Recognition & Milestones",
-    icon: Trophy,
-    description: "Key honors and certifications that reflect commitment to excellence across multiple domains.",
-    categories: ["Recognition & Awards"]
-  }
-];
+  "Arts, Athletics & Personal Passions": { 
+    bg: "bg-rose-500/10", 
+    text: "text-rose-400", 
+    border: "border-rose-500/30" 
+  },
+  "Recognition & Awards": { 
+    bg: "bg-yellow-500/10", 
+    text: "text-yellow-400", 
+    border: "border-yellow-500/30" 
+  },
+};
+
+const categoryIcons: Record<string, React.ElementType> = {
+  "Academic & Scholarly Achievements": BookOpen,
+  "Technology, Coding & Innovation": Code,
+  "Leadership, Volunteering & Environmental Action": Users,
+  "Model United Nations (MUN) & Public Speaking": Users,
+  "Arts, Athletics & Personal Passions": Palette,
+  "Recognition & Awards": Trophy,
+};
 
 const Foundations = () => {
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const [showActivityForm, setShowActivityForm] = useState(false);
-  const [editingActivity, setEditingActivity] = useState<Activity | undefined>();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [viewingProject, setViewingProject] = useState<Project | undefined>();
   const { isAdmin } = useAdminAuth();
 
   useEffect(() => {
-    fetchActivities();
+    fetchProjects();
   }, []);
 
-  const fetchActivities = async () => {
+  const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
-        .from('activities')
+        .from('projects')
         .select('*')
+        .or('is_work.eq.false,is_work.is.null')
         .order('start_date', { ascending: false });
 
       if (error) throw error;
-      setActivities(data || []);
+      setProjects(data || []);
     } catch (error) {
-      console.error('Error fetching activities:', error);
+      console.error('Error fetching projects:', error);
       toast.error('Failed to load foundations');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (activity: Activity) => {
-    setEditingActivity(activity);
-    setShowActivityForm(true);
-  };
-
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
-      const { error } = await supabase.functions.invoke('manage-activities', {
-        body: { action: 'delete', activityId: id }
+      const { error } = await supabase.functions.invoke('manage-projects', {
+        body: { action: 'delete', projectId: id }
       });
 
       if (error) throw error;
       toast.success('Item deleted successfully');
-      fetchActivities();
+      fetchProjects();
     } catch (error) {
-      console.error('Error deleting activity:', error);
+      console.error('Error deleting project:', error);
       toast.error('Failed to delete item');
     }
   };
 
-  const handleFormClose = () => {
-    setShowActivityForm(false);
-    setEditingActivity(undefined);
+  // Get unique categories from projects
+  const categories = [...new Set(projects.map(p => p.category))];
+  
+  // Filter projects by selected category
+  const filteredProjects = selectedCategory 
+    ? projects.filter(p => p.category === selectedCategory)
+    : projects;
+
+  const getCategoryStyle = (category: string) => {
+    return categoryColors[category] || { 
+      bg: "bg-muted", 
+      text: "text-muted-foreground", 
+      border: "border-border" 
+    };
   };
 
-  const getActivitiesForSection = (section: typeof foundationSections[0]) => {
-    return activities.filter(activity => 
-      section.categories.some(cat => 
-        activity.category.toLowerCase().includes(cat.toLowerCase()) ||
-        cat.toLowerCase().includes(activity.category.toLowerCase())
-      )
-    );
+  const getCategoryIcon = (category: string) => {
+    return categoryIcons[category] || BookOpen;
   };
 
   if (loading) {
@@ -151,110 +164,111 @@ const Foundations = () => {
           </p>
         </motion.div>
 
-        {isAdmin && (
-          <div className="flex justify-end mb-8">
-            <Button 
-              onClick={() => setShowActivityForm(true)}
-              className="bg-accent hover:bg-accent/90 text-accent-foreground"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Foundation Item
-            </Button>
-          </div>
-        )}
-
-        <ActivityFormModal 
-          open={showActivityForm}
-          onOpenChange={handleFormClose}
-          onSuccess={fetchActivities}
-          activity={editingActivity}
+        <ProjectDetailModal
+          project={viewingProject}
+          open={!!viewingProject}
+          onOpenChange={(open) => !open && setViewingProject(undefined)}
         />
 
-        <div className="max-w-4xl mx-auto space-y-6">
-          {foundationSections.map((section, index) => {
-            const sectionActivities = getActivitiesForSection(section);
-            const isExpanded = expandedSection === section.id;
-            const Icon = section.icon;
-
+        {/* Category Filter */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          <Button
+            variant={selectedCategory === null ? "default" : "outline"}
+            onClick={() => setSelectedCategory(null)}
+            className={selectedCategory === null ? "bg-accent text-accent-foreground" : ""}
+          >
+            All Categories
+          </Button>
+          {categories.map((category) => {
+            const style = getCategoryStyle(category);
+            const Icon = getCategoryIcon(category);
             return (
-              <motion.div
-                key={section.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-card rounded-xl shadow-elegant overflow-hidden"
+              <Button
+                key={category}
+                variant="outline"
+                onClick={() => setSelectedCategory(category)}
+                className={`${selectedCategory === category ? style.bg + " " + style.border : ""} ${style.text} border ${style.border} hover:${style.bg}`}
               >
-                <button
-                  onClick={() => setExpandedSection(isExpanded ? null : section.id)}
-                  className="w-full p-6 flex items-start gap-4 text-left hover:bg-muted/20 transition-smooth"
-                >
-                  <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Icon className="text-accent" size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold mb-2">{section.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {section.description}
-                    </p>
-                  </div>
-                  <ChevronDown 
-                    className={`text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                    size={24} 
-                  />
-                </button>
-
-                {isExpanded && sectionActivities.length > 0 && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="border-t border-border"
-                  >
-                    <div className="p-6 space-y-4">
-                      {sectionActivities.map((activity) => (
-                        <div 
-                          key={activity.id}
-                          className="bg-background rounded-lg p-4 border border-border"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h4 className="font-semibold">{activity.title}</h4>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(activity.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                                  {activity.end_date && ` – ${new Date(activity.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                                </span>
-                              </div>
-                              <p className="text-sm text-muted-foreground">{activity.description}</p>
-                            </div>
-                            {isAdmin && (
-                              <div className="flex gap-1 ml-4">
-                                <Button size="icon" variant="ghost" onClick={() => handleEdit(activity)} className="h-8 w-8">
-                                  <Edit className="h-4 w-4 text-accent" />
-                                </Button>
-                                <Button size="icon" variant="ghost" onClick={() => handleDelete(activity.id)} className="h-8 w-8">
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {isExpanded && sectionActivities.length === 0 && (
-                  <div className="border-t border-border p-6">
-                    <p className="text-muted-foreground text-center text-sm">
-                      No items in this section yet.
-                    </p>
-                  </div>
-                )}
-              </motion.div>
+                <Icon className="mr-2 h-4 w-4" />
+                {category.split(' ')[0]}
+              </Button>
             );
           })}
         </div>
+
+        {/* Projects Grid */}
+        {filteredProjects.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-24"
+          >
+            <p className="text-muted-foreground text-lg">No foundation items found.</p>
+          </motion.div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {filteredProjects.map((project, index) => {
+              const style = getCategoryStyle(project.category);
+              const Icon = getCategoryIcon(project.category);
+              
+              return (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.05 }}
+                  whileHover={{ y: -8 }}
+                  className={`bg-card rounded-xl overflow-hidden shadow-elegant hover:shadow-glow transition-smooth group border ${style.border}`}
+                >
+                  <div className={`h-2 ${style.bg.replace('/10', '')}`} />
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className={`flex items-center gap-2 ${style.text}`}>
+                        <Icon size={16} />
+                        <span className="text-sm font-semibold">{project.category}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button size="icon" variant="ghost" onClick={() => setViewingProject(project)}>
+                          <Eye size={18} />
+                        </Button>
+                        {isAdmin && (
+                          <Button size="icon" variant="ghost" onClick={() => handleDelete(project.id)}>
+                            <Trash2 size={18} className="text-destructive" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">{project.title}</h3>
+                    <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.tags?.slice(0, 4).map((tag) => (
+                        <span
+                          key={tag}
+                          className={`px-3 py-1 ${style.bg} text-xs rounded-full ${style.text}`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(project.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        {project.end_date && ` – ${new Date(project.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                      </span>
+                      {project.impact && (
+                        <Badge variant="secondary" className={style.bg + " " + style.text}>
+                          {project.impact}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
