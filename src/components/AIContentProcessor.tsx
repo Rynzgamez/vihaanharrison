@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Check, X, Upload, Calendar, SkipForward } from "lucide-react";
+import { Sparkles, Loader2, Check, X, Upload, Calendar, SkipForward, Briefcase, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ProcessedProject {
@@ -19,15 +21,28 @@ interface ProcessedProject {
   start_date: string;
   end_date?: string;
   image_urls?: string[];
+  is_work?: boolean;
+  is_featured?: boolean;
 }
 
 interface AIContentProcessorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  defaultIsWork?: boolean;
 }
 
-const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcessorProps) => {
+// All available categories
+const allCategories = [
+  "Academic & Scholarly Achievements",
+  "Technology, Coding & Innovation",
+  "Leadership, Volunteering & Environmental Action",
+  "Model United Nations (MUN) & Public Speaking",
+  "Arts, Athletics & Personal Passions",
+  "Recognition & Awards",
+];
+
+const AIContentProcessor = ({ open, onOpenChange, onSuccess, defaultIsWork = false }: AIContentProcessorProps) => {
   const [rawContent, setRawContent] = useState("");
   const [processing, setProcessing] = useState(false);
   const [processedProjects, setProcessedProjects] = useState<ProcessedProject[]>([]);
@@ -36,6 +51,7 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
   const [currentDetailIndex, setCurrentDetailIndex] = useState(0);
   const [projectDates, setProjectDates] = useState<Record<number, { start_date: string; end_date: string }>>({});
   const [projectFiles, setProjectFiles] = useState<Record<number, File[]>>({});
+  const [projectSettings, setProjectSettings] = useState<Record<number, { is_work: boolean; is_featured: boolean; category: string }>>({});
 
   const handleProcess = async () => {
     if (!rawContent.trim()) {
@@ -53,15 +69,22 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
 
       if (data?.projects && Array.isArray(data.projects)) {
         setProcessedProjects(data.projects);
-        // Initialize dates from AI response
+        // Initialize dates and settings from AI response
         const initialDates: Record<number, { start_date: string; end_date: string }> = {};
+        const initialSettings: Record<number, { is_work: boolean; is_featured: boolean; category: string }> = {};
         data.projects.forEach((p: ProcessedProject, i: number) => {
           initialDates[i] = {
             start_date: p.start_date || new Date().toISOString().split('T')[0],
             end_date: p.end_date || ""
           };
+          initialSettings[i] = {
+            is_work: defaultIsWork,
+            is_featured: false,
+            category: p.category || allCategories[0]
+          };
         });
         setProjectDates(initialDates);
+        setProjectSettings(initialSettings);
         setStep('review');
         toast.success(`Processed ${data.projects.length} project(s)`);
       } else {
@@ -158,6 +181,7 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
       for (let i = 0; i < processedProjects.length; i++) {
         const project = processedProjects[i];
         const dates = projectDates[i] || { start_date: project.start_date, end_date: project.end_date };
+        const settings = projectSettings[i] || { is_work: defaultIsWork, is_featured: false, category: project.category };
         const files = projectFiles[i] || [];
         
         let imageUrls: string[] = [];
@@ -173,10 +197,11 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
             action: 'create', 
             projectData: {
               ...project,
+              category: settings.category,
               start_date: finalStartDate,
               end_date: finalEndDate,
-              is_featured: false,
-              is_work: true,
+              is_featured: settings.is_featured,
+              is_work: settings.is_work,
               image_urls: imageUrls
             }
           }
@@ -185,7 +210,19 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
         if (error) throw error;
       }
 
-      toast.success(`Saved ${processedProjects.length} project(s) successfully`);
+      const workCount = Object.values(projectSettings).filter(s => s.is_work).length;
+      const foundationCount = processedProjects.length - workCount;
+      
+      let successMessage = `Saved ${processedProjects.length} project(s) successfully`;
+      if (workCount > 0 && foundationCount > 0) {
+        successMessage = `Saved ${workCount} to Work and ${foundationCount} to Foundations`;
+      } else if (workCount > 0) {
+        successMessage = `Saved ${workCount} project(s) to Work`;
+      } else {
+        successMessage = `Saved ${foundationCount} project(s) to Foundations`;
+      }
+      
+      toast.success(successMessage);
       onSuccess();
       
       // Reset after delay
@@ -204,7 +241,7 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
 
   const handleRemoveProject = (index: number) => {
     setProcessedProjects(prev => prev.filter((_, i) => i !== index));
-    // Also remove associated dates and files
+    // Also remove associated dates, files, and settings
     setProjectDates(prev => {
       const updated = { ...prev };
       delete updated[index];
@@ -215,6 +252,21 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
       delete updated[index];
       return updated;
     });
+    setProjectSettings(prev => {
+      const updated = { ...prev };
+      delete updated[index];
+      return updated;
+    });
+  };
+
+  const updateProjectSetting = (index: number, key: 'is_work' | 'is_featured' | 'category', value: boolean | string) => {
+    setProjectSettings(prev => ({
+      ...prev,
+      [index]: {
+        ...prev[index],
+        [key]: value
+      }
+    }));
   };
 
   const resetState = () => {
@@ -224,6 +276,7 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
     setCurrentDetailIndex(0);
     setProjectDates({});
     setProjectFiles({});
+    setProjectSettings({});
   };
 
   const handleClose = () => {
@@ -232,6 +285,7 @@ const AIContentProcessor = ({ open, onOpenChange, onSuccess }: AIContentProcesso
   };
 
   const currentProject = processedProjects[currentDetailIndex];
+  const currentSettings = projectSettings[currentDetailIndex] || { is_work: defaultIsWork, is_featured: false, category: currentProject?.category || allCategories[0] };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -300,69 +354,119 @@ Also completed the Google AI certification program in March 2024, focusing on ma
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Review the extracted projects below. Remove any that are incorrect.
+                Review the extracted projects. Set category and destination for each.
               </p>
               <Badge variant="secondary">{processedProjects.length} project(s)</Badge>
             </div>
 
             <div className="space-y-4 max-h-[50vh] overflow-y-auto">
-              {processedProjects.map((project, index) => (
-                <div 
-                  key={index}
-                  className="bg-background rounded-lg p-4 border border-border"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="font-semibold text-foreground">{project.title}</h4>
-                      <span className="text-sm text-accent">{project.category}</span>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleRemoveProject(index)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                  
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {project.description}
-                  </p>
-
-                  {project.writeup && (
-                    <details className="mb-3">
-                      <summary className="text-sm text-accent cursor-pointer hover:underline">
-                        View full writeup
-                      </summary>
-                      <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap border-l-2 border-accent/30 pl-3">
-                        {project.writeup}
-                      </p>
-                    </details>
-                  )}
-
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {project.tags?.map((tag, i) => (
-                      <span 
-                        key={i}
-                        className="px-2 py-1 bg-muted text-xs rounded-full text-muted-foreground"
+              {processedProjects.map((project, index) => {
+                const settings = projectSettings[index] || { is_work: defaultIsWork, is_featured: false, category: project.category };
+                
+                return (
+                  <div 
+                    key={index}
+                    className="bg-background rounded-lg p-4 border border-border"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-foreground">{project.title}</h4>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleRemoveProject(index)}
+                        className="text-destructive hover:text-destructive"
                       >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                        Remove
+                      </Button>
+                    </div>
+                    
+                    {/* Category Selection */}
+                    <div className="mb-3">
+                      <Label className="text-sm text-muted-foreground mb-1 block">Category</Label>
+                      <Select
+                        value={settings.category}
+                        onValueChange={(value) => updateProjectSetting(index, 'category', value)}
+                      >
+                        <SelectTrigger className="w-full bg-card border-border">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-card border-border z-[300]">
+                          {allCategories.map((cat) => (
+                            <SelectItem key={cat} value={cat} className="text-foreground">
+                              {cat}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span>
-                      {project.start_date ? new Date(project.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Date TBD'}
-                      {project.end_date && ` – ${new Date(project.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                    </span>
-                    {project.impact && (
-                      <span className="text-accent font-medium">{project.impact}</span>
+                    {/* Toggles for Is Work and Is Featured */}
+                    <div className="flex flex-wrap gap-4 mb-3 p-3 bg-muted/30 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id={`is-work-${index}`}
+                          checked={settings.is_work}
+                          onCheckedChange={(checked) => updateProjectSetting(index, 'is_work', checked)}
+                        />
+                        <Label htmlFor={`is-work-${index}`} className="text-sm flex items-center gap-1.5 cursor-pointer">
+                          <Briefcase className="h-4 w-4 text-accent" />
+                          <span>Is Work</span>
+                          <span className="text-xs text-muted-foreground">(→ Work page)</span>
+                        </Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id={`is-featured-${index}`}
+                          checked={settings.is_featured}
+                          onCheckedChange={(checked) => updateProjectSetting(index, 'is_featured', checked)}
+                        />
+                        <Label htmlFor={`is-featured-${index}`} className="text-sm flex items-center gap-1.5 cursor-pointer">
+                          <Star className="h-4 w-4 text-yellow-500" />
+                          <span>Featured</span>
+                        </Label>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {project.description}
+                    </p>
+
+                    {project.writeup && (
+                      <details className="mb-3">
+                        <summary className="text-sm text-accent cursor-pointer hover:underline">
+                          View full writeup
+                        </summary>
+                        <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap border-l-2 border-accent/30 pl-3">
+                          {project.writeup}
+                        </p>
+                      </details>
                     )}
+
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {project.tags?.map((tag, i) => (
+                        <span 
+                          key={i}
+                          className="px-2 py-1 bg-muted text-xs rounded-full text-muted-foreground"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span>
+                        {project.start_date ? new Date(project.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Date TBD'}
+                        {project.end_date && ` – ${new Date(project.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                      </span>
+                      {project.impact && (
+                        <span className="text-accent font-medium">{project.impact}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="flex gap-3 pt-4 border-t border-border">
@@ -385,10 +489,24 @@ Also completed the Google AI certification program in March 2024, focusing on ma
 
         {step === 'details' && currentProject && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-lg">{currentProject.title}</h3>
-                <span className="text-sm text-accent">{currentProject.category}</span>
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-lg">{currentProject.title}</h3>
+                  {currentSettings.is_work && (
+                    <Badge variant="secondary" className="bg-accent/10 text-accent">
+                      <Briefcase className="h-3 w-3 mr-1" />
+                      Work
+                    </Badge>
+                  )}
+                  {currentSettings.is_featured && (
+                    <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-500">
+                      <Star className="h-3 w-3 mr-1" />
+                      Featured
+                    </Badge>
+                  )}
+                </div>
+                <span className="text-sm text-accent">{currentSettings.category}</span>
               </div>
               <Badge variant="secondary">
                 {currentDetailIndex + 1} of {processedProjects.length}
@@ -396,6 +514,58 @@ Also completed the Google AI certification program in March 2024, focusing on ma
             </div>
 
             <p className="text-sm text-muted-foreground">{currentProject.description}</p>
+
+            {/* Category Selection for current project */}
+            <div>
+              <Label className="text-foreground mb-2 block">Category</Label>
+              <Select
+                value={currentSettings.category}
+                onValueChange={(value) => updateProjectSetting(currentDetailIndex, 'category', value)}
+              >
+                <SelectTrigger className="w-full bg-background border-border">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border z-[300]">
+                  {allCategories.map((cat) => (
+                    <SelectItem key={cat} value={cat} className="text-foreground">
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Toggles */}
+            <div className="flex flex-wrap gap-6 p-4 bg-muted/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="current-is-work"
+                  checked={currentSettings.is_work}
+                  onCheckedChange={(checked) => updateProjectSetting(currentDetailIndex, 'is_work', checked)}
+                />
+                <Label htmlFor="current-is-work" className="flex items-center gap-2 cursor-pointer">
+                  <Briefcase className="h-4 w-4 text-accent" />
+                  <div>
+                    <span className="font-medium">Is Work</span>
+                    <p className="text-xs text-muted-foreground">Shows on Work page instead of Foundations</p>
+                  </div>
+                </Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="current-is-featured"
+                  checked={currentSettings.is_featured}
+                  onCheckedChange={(checked) => updateProjectSetting(currentDetailIndex, 'is_featured', checked)}
+                />
+                <Label htmlFor="current-is-featured" className="flex items-center gap-2 cursor-pointer">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  <div>
+                    <span className="font-medium">Featured</span>
+                    <p className="text-xs text-muted-foreground">Highlight as featured project</p>
+                  </div>
+                </Label>
+              </div>
+            </div>
 
             {/* Date inputs */}
             <div className="grid grid-cols-2 gap-4">
@@ -531,7 +701,7 @@ Also completed the Google AI certification program in March 2024, focusing on ma
                 </div>
                 <h3 className="text-xl font-bold mb-2">Projects Saved Successfully</h3>
                 <p className="text-muted-foreground">
-                  {processedProjects.length} project(s) have been added to your work.
+                  {processedProjects.length} project(s) have been added.
                 </p>
               </>
             )}
