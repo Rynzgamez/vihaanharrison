@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CursorEffect from "@/components/CursorEffect";
-import { BookOpen, Users, Code, Palette, Trophy, Eye, Trash2, Sparkles, Plus } from "lucide-react";
+import { BookOpen, Users, Code, Palette, Trophy, Eye, Trash2, Sparkles, Plus, Edit, ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
@@ -23,6 +23,7 @@ interface Project {
   live_url?: string;
   writeup?: string;
   is_featured: boolean;
+  is_work?: boolean;
   start_date: string;
   end_date?: string;
   image_urls?: string[];
@@ -104,7 +105,18 @@ const Foundations = () => {
   const [viewingProject, setViewingProject] = useState<Project | undefined>();
   const [showAIProcessor, setShowAIProcessor] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | undefined>();
   const { isAdmin } = useAdminAuth();
+
+  const handleEdit = (project: Project) => {
+    setEditingProject(project);
+    setShowProjectForm(true);
+  };
+
+  const handleFormClose = () => {
+    setShowProjectForm(false);
+    setEditingProject(undefined);
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -232,8 +244,9 @@ const Foundations = () => {
 
         <ProjectFormModal 
           open={showProjectForm}
-          onOpenChange={setShowProjectForm}
+          onOpenChange={handleFormClose}
           onSuccess={fetchProjects}
+          editProject={editingProject}
           isWorkPage={false}
         />
 
@@ -304,10 +317,29 @@ const Foundations = () => {
                         <Button size="icon" variant="ghost" onClick={() => setViewingProject(project)}>
                           <Eye size={18} />
                         </Button>
-                        {isAdmin && (
-                          <Button size="icon" variant="ghost" onClick={() => handleDelete(project.id)}>
-                            <Trash2 size={18} className="text-destructive" />
+                        {project.github_url && (
+                          <Button size="icon" variant="ghost" asChild>
+                            <a href={project.github_url} target="_blank" rel="noopener noreferrer">
+                              <Github size={18} />
+                            </a>
                           </Button>
+                        )}
+                        {project.live_url && (
+                          <Button size="icon" variant="ghost" asChild>
+                            <a href={project.live_url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink size={18} />
+                            </a>
+                          </Button>
+                        )}
+                        {isAdmin && (
+                          <>
+                            <Button size="icon" variant="ghost" onClick={() => handleEdit(project)}>
+                              <Edit size={18} className="text-accent" />
+                            </Button>
+                            <Button size="icon" variant="ghost" onClick={() => handleDelete(project.id)}>
+                              <Trash2 size={18} className="text-destructive" />
+                            </Button>
+                          </>
                         )}
                       </div>
                     </div>
