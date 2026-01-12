@@ -3,12 +3,14 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CursorEffect from "@/components/CursorEffect";
-import { BookOpen, Users, Code, Palette, Trophy, Eye, Trash2 } from "lucide-react";
+import { BookOpen, Users, Code, Palette, Trophy, Eye, Trash2, Sparkles, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { toast } from "sonner";
 import ProjectDetailModal from "@/components/ProjectDetailModal";
+import AIContentProcessor from "@/components/AIContentProcessor";
+import ProjectFormModal from "@/components/ProjectFormModal";
 
 interface Project {
   id: string;
@@ -100,6 +102,8 @@ const Foundations = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [viewingProject, setViewingProject] = useState<Project | undefined>();
+  const [showAIProcessor, setShowAIProcessor] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
   const { isAdmin } = useAdminAuth();
 
   useEffect(() => {
@@ -193,10 +197,44 @@ const Foundations = () => {
           </p>
         </motion.div>
 
+        {isAdmin && (
+          <div className="flex justify-end items-center mb-8 gap-3">
+            <Button 
+              onClick={() => setShowAIProcessor(true)}
+              variant="outline"
+              className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+            >
+              <Sparkles className="mr-2 h-4 w-4" />
+              AI Process Content
+            </Button>
+            <Button 
+              onClick={() => setShowProjectForm(true)}
+              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Foundation
+            </Button>
+          </div>
+        )}
+
         <ProjectDetailModal
           project={viewingProject}
           open={!!viewingProject}
           onOpenChange={(open) => !open && setViewingProject(undefined)}
+        />
+
+        <AIContentProcessor
+          open={showAIProcessor}
+          onOpenChange={setShowAIProcessor}
+          onSuccess={fetchProjects}
+          defaultIsWork={false}
+        />
+
+        <ProjectFormModal 
+          open={showProjectForm}
+          onOpenChange={setShowProjectForm}
+          onSuccess={fetchProjects}
+          isWorkPage={false}
         />
 
         {/* Category Filter */}

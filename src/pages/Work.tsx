@@ -148,6 +148,7 @@ const Work = () => {
           open={showAIProcessor}
           onOpenChange={setShowAIProcessor}
           onSuccess={fetchProjects}
+          defaultIsWork={true}
         />
 
         <ProjectDetailModal
