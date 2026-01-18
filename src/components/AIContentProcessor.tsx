@@ -354,7 +354,7 @@ Also completed the Google AI certification program in March 2024, focusing on ma
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Review the extracted projects. Set category and destination for each.
+                Review the extracted projects. Set category, dates, and destination for each.
               </p>
               <Badge variant="secondary">{processedProjects.length} project(s)</Badge>
             </div>
@@ -362,6 +362,7 @@ Also completed the Google AI certification program in March 2024, focusing on ma
             <div className="space-y-4 max-h-[50vh] overflow-y-auto">
               {processedProjects.map((project, index) => {
                 const settings = projectSettings[index] || { is_work: defaultIsWork, is_featured: false, category: project.category };
+                const dates = projectDates[index] || { start_date: project.start_date || '', end_date: project.end_date || '' };
                 
                 return (
                   <div 
@@ -400,6 +401,45 @@ Also completed the Google AI certification program in March 2024, focusing on ma
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    {/* Editable Date Fields - Auto-filled from AI */}
+                    <div className="mb-3 grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor={`start-date-${index}`} className="text-sm text-muted-foreground mb-1 block flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          Start Date
+                          {project.start_date && <span className="text-xs text-accent">(AI detected)</span>}
+                        </Label>
+                        <Input
+                          id={`start-date-${index}`}
+                          type="date"
+                          value={dates.start_date}
+                          onChange={(e) => setProjectDates(prev => ({
+                            ...prev,
+                            [index]: { ...prev[index], start_date: e.target.value }
+                          }))}
+                          className="bg-card border-border text-foreground"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`end-date-${index}`} className="text-sm text-muted-foreground mb-1 block flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          End Date
+                          {project.end_date && <span className="text-xs text-accent">(AI detected)</span>}
+                        </Label>
+                        <Input
+                          id={`end-date-${index}`}
+                          type="date"
+                          value={dates.end_date}
+                          onChange={(e) => setProjectDates(prev => ({
+                            ...prev,
+                            [index]: { ...prev[index], end_date: e.target.value }
+                          }))}
+                          className="bg-card border-border text-foreground"
+                          placeholder="Leave empty if ongoing"
+                        />
+                      </div>
                     </div>
 
                     {/* Toggles for Is Work and Is Featured */}
@@ -456,10 +496,6 @@ Also completed the Google AI certification program in March 2024, focusing on ma
                     </div>
 
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span>
-                        {project.start_date ? new Date(project.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Date TBD'}
-                        {project.end_date && ` – ${new Date(project.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
-                      </span>
                       {project.impact && (
                         <span className="text-accent font-medium">{project.impact}</span>
                       )}
@@ -475,7 +511,7 @@ Also completed the Google AI certification program in March 2024, focusing on ma
                 disabled={processedProjects.length === 0}
                 className="bg-accent hover:bg-accent/90 text-accent-foreground"
               >
-                Continue to Dates & Photos
+                Continue to Add Photos
               </Button>
               <Button variant="outline" onClick={() => setStep('input')}>
                 Back to Edit
@@ -507,6 +543,16 @@ Also completed the Google AI certification program in March 2024, focusing on ma
                   )}
                 </div>
                 <span className="text-sm text-accent">{currentSettings.category}</span>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {projectDates[currentDetailIndex]?.start_date && (
+                    <>
+                      {new Date(projectDates[currentDetailIndex].start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                      {projectDates[currentDetailIndex]?.end_date && (
+                        <> – {new Date(projectDates[currentDetailIndex].end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
               <Badge variant="secondary">
                 {currentDetailIndex + 1} of {processedProjects.length}
@@ -514,100 +560,6 @@ Also completed the Google AI certification program in March 2024, focusing on ma
             </div>
 
             <p className="text-sm text-muted-foreground">{currentProject.description}</p>
-
-            {/* Category Selection for current project */}
-            <div>
-              <Label className="text-foreground mb-2 block">Category</Label>
-              <Select
-                value={currentSettings.category}
-                onValueChange={(value) => updateProjectSetting(currentDetailIndex, 'category', value)}
-              >
-                <SelectTrigger className="w-full bg-background border-border">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent className="bg-card border-border z-[300]">
-                  {allCategories.map((cat) => (
-                    <SelectItem key={cat} value={cat} className="text-foreground">
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Toggles */}
-            <div className="flex flex-wrap gap-6 p-4 bg-muted/30 rounded-lg">
-              <div className="flex items-center gap-3">
-                <Switch
-                  id="current-is-work"
-                  checked={currentSettings.is_work}
-                  onCheckedChange={(checked) => updateProjectSetting(currentDetailIndex, 'is_work', checked)}
-                />
-                <Label htmlFor="current-is-work" className="flex items-center gap-2 cursor-pointer">
-                  <Briefcase className="h-4 w-4 text-accent" />
-                  <div>
-                    <span className="font-medium">Is Work</span>
-                    <p className="text-xs text-muted-foreground">Shows on Work page instead of Foundations</p>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <Switch
-                  id="current-is-featured"
-                  checked={currentSettings.is_featured}
-                  onCheckedChange={(checked) => updateProjectSetting(currentDetailIndex, 'is_featured', checked)}
-                />
-                <Label htmlFor="current-is-featured" className="flex items-center gap-2 cursor-pointer">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  <div>
-                    <span className="font-medium">Featured</span>
-                    <p className="text-xs text-muted-foreground">Highlight as featured project</p>
-                  </div>
-                </Label>
-              </div>
-            </div>
-
-            {/* Date inputs */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="start_date" className="text-foreground flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Start Date
-                </Label>
-                <Input
-                  id="start_date"
-                  type="date"
-                  value={projectDates[currentDetailIndex]?.start_date || currentProject.start_date || ""}
-                  onChange={(e) => setProjectDates(prev => ({
-                    ...prev,
-                    [currentDetailIndex]: {
-                      ...prev[currentDetailIndex],
-                      start_date: e.target.value
-                    }
-                  }))}
-                  className="bg-background text-foreground border-border mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="end_date" className="text-foreground flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  End Date (Optional)
-                </Label>
-                <Input
-                  id="end_date"
-                  type="date"
-                  value={projectDates[currentDetailIndex]?.end_date || currentProject.end_date || ""}
-                  onChange={(e) => setProjectDates(prev => ({
-                    ...prev,
-                    [currentDetailIndex]: {
-                      ...prev[currentDetailIndex],
-                      end_date: e.target.value
-                    }
-                  }))}
-                  className="bg-background text-foreground border-border mt-1"
-                />
-              </div>
-            </div>
 
             {/* Photo upload */}
             <div>
